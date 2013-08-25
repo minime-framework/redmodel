@@ -68,6 +68,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals('default', FooClass::selectDatabase());
 		$this->assertEquals('test', FooAlternativeDatabase::selectDatabase());
+
 		$ids_db1 = [];
 		$ids_db2 = [];
 		$i = 10;
@@ -76,13 +77,34 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			$ids_db1[] = (new FooClass)->save();
 			$ids_db2[] = (new FooAlternativeDatabase)->save();
 		}
+
 		$this->assertEquals(10, FooClass::count());
 		$this->assertSame(range(1, 10), $ids_db1);
 
 		$this->assertEquals(10, FooAlternativeDatabase::count());
 		$this->assertSame(range(1, 10), $ids_db2);
 
-		FooAlternativeDatabase::RESET();
+		FooAlternativeDatabase::reset();
+	}
+
+	/**
+	 * @test
+	 * @depends saving
+	 */
+	public function timestamps()
+	{
+		$foo = new FooClass;
+		$foo->save();
+		$this->assertEquals($foo->created_at, $foo->updated_at);
+
+		$foo->save();
+		$this->assertEquals($foo->created_at, $foo->updated_at);
+		
+		sleep(1);
+
+		$foo->name = "bar";
+		$foo->save();
+		$this->assertNotEquals($foo->created_at, $foo->updated_at);
 	}
 
 	/**
@@ -94,8 +116,28 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		$i = 3;
 		while($i--)
 		{
-			R::store( R::dispense( FooClass::entity() ) );
+			(new FooClass)->save();
 		}
+		$this->assertSame(TRUE, (new FooClass(3))->delete());
+		$this->assertSame(NULL, (new FooClass(3))->delete());
+		$this->assertEquals(2, FooClass::count());
+
+		$this->assertSame(TRUE, (new FooClass(2))->delete());
+		$this->assertSame(NULL, (new FooClass(2))->delete());
+		$this->assertEquals(1, FooClass::count());
+
+		$this->assertSame(NULL, (new FooClass())->delete());
+		$this->assertEquals(1, FooClass::count());
+	}
+
+	public static function delete()
+	{
+		$i = 10;
+		while($i--)
+		{
+			(new FooClass)->save();
+		}
+
 		$this->assertSame(TRUE, (new FooClass(3))->delete());
 		$this->assertSame(NULL, (new FooClass(3))->delete());
 		$this->assertEquals(2, FooClass::count());
@@ -117,12 +159,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
 		$foo = new FooClass();
 		$foo->name = 'bar';
-		$this->assertEquals(['id' => 0,  'name' => 'bar'], $foo->export());
+		$this->assertTrue(in_array('name', array_keys($foo->export())));
 		$foo->save();
-		$this->assertEquals(['id' => 1,  'name' => 'bar'], $foo->export());
+		$this->assertTrue(in_array('name', array_keys($foo->export())));
 
 		$retrieved_foo = new FooClass(1);
-		$this->assertEquals(['id' => 1,  'name' => 'bar'], $retrieved_foo->export());
+		$this->assertTrue(in_array('name', array_keys($retrieved_foo->export())));
+
 	}
 
 	/**
@@ -194,6 +237,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
  * @entity
  * @table foo
  * @unique-constrainst [["name"]]
+ * @timestamps
  */
 class FooClass extends Model
 {
@@ -217,6 +261,14 @@ class FooClass extends Model
  * @entity
  */
 class FooTableFromClassName extends Model
+{
+}
+
+/**
+ * @entity
+ * @faux-delete
+ */
+class SoftDelete extends Model
 {
 }
 

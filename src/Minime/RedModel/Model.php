@@ -5,6 +5,7 @@ namespace Minime\RedModel;
 use Minime\Annotations\Load as Meta;
 use Minime\Annotations\Traits\Reader;
 use R;
+use \DateTime;
 use \InvalidArgumentException;
 
 class Model
@@ -115,6 +116,10 @@ class Model
 	{
 		if($this->check())
 		{
+			if($this->class_meta->has('timestamps'))
+			{
+				$this->updateTimestamps();
+			}
 			return R::store($this->bean);
 		}
 		return false;
@@ -179,10 +184,10 @@ class Model
 		}
 	}
 
-	public static function RESET()
+	public static function reset()
 	{
 		self::selectDatabase();
-		R::nuke();			
+		R::nuke();
 	}
 
 	public static function selectDatabase()
@@ -195,6 +200,35 @@ class Model
 		}
 		R::selectDatabase($db_name);
 		return $db_name;
+	}
+
+	/**
+	 * Update the creation and update timestamps.
+	 *
+	 * @return void
+	 */
+	protected function updateTimestamps()
+	{
+		$time = $this->freshTimestamp();
+
+		if($this->bean->getMeta('tainted'))
+		{
+			if(!$this->bean->id)
+			{
+				$this->bean->created_at = $time;		
+			}
+			$this->bean->updated_at = $time;
+		}
+	}
+
+	/**
+	 * Get a fresh timestamp for the model.
+	 *
+	 * @return DateTime
+	 */
+	public function freshTimestamp()
+	{
+		return new DateTime;
 	}
 
 	/**
