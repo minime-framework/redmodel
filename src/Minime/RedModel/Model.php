@@ -242,16 +242,4 @@ class Model
     {
         return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $word));
     }
-
-    /**
-     * Converts a word into the format for a Red Model class name. Converts 'table_name' to 'TableName'.
-     *
-     * @param string $word The word to classify.
-     *
-     * @return string The classified word.
-     */
-    private static function classify($word)
-    {
-        return str_replace(" ", "", ucwords(strtr($word, "_-", "  ")));
-    }
 }
