@@ -14,7 +14,6 @@ class Model
 
 	private $bean;
 	private $class_meta;
-	private $fields_meta;
 
 	public function __construct($id = null, \RedBean_OODBBean $bean = null)
 	{
