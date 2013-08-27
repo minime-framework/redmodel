@@ -63,12 +63,21 @@ class Model
 		return $this->bean->$property;
 	}
 
+	/**
+	 * Export all bean properties to associative array.
+	 * return array Associative array: `["property" => "values"]`
+	 */
 	public function export()
 	{
 		return $this->bean->export();
 	}
 
 	public function pluck()
+	/**
+	 * Export bean properties to JSON.
+	 * @return string JSON
+	 */
+	public function exportJSON()
 	{
 		$values = [];
 		foreach(func_get_args() as $property)
@@ -78,7 +87,7 @@ class Model
 	}
 
 	/**
-	 * @todo Lógica universal para checagem de valores únicos
+	 * @todo Add database agnostic logic to check unique constrainsts of values
 	 */
 	private function checkUniqueConstraints()
 	{
@@ -112,6 +121,10 @@ class Model
 		return true;
 	}
 
+	/**
+	 * Save to database.
+	 * @return integer Primary key of saved row
+	 */
 	public function save()
 	{
 		if($this->check())
@@ -125,6 +138,10 @@ class Model
 		return false;
 	}
 	
+	/**
+	 * Delete from database.
+	 * @return bool
+	 */
 	public function delete()
 	{
 		if($this->bean->id)
@@ -139,7 +156,7 @@ class Model
 	}
 
 	/**
-	 * Load all rows from table
+	 * Load all rows from table.
 	 * @return array of Minime\RedModel\Model
 	 */
 	public static function all()
@@ -155,6 +172,10 @@ class Model
 		return $beans;
 	}
 	
+	/**
+	 * Count rows from table.
+	 * @return integer
+	 */
 	public static function count()
 	{
 		self::selectDatabase();
@@ -162,6 +183,10 @@ class Model
 	}
 
 	public static function wipe()
+	/**
+	 * Wipe entire table and reset primary key sequence (TRUNCATE).
+	 * @return void
+	 */
 	{
 		self::selectDatabase();
 		return R::wipe( self::entity() );
@@ -184,6 +209,10 @@ class Model
 		}
 	}
 
+	/**
+	 * Remove all entities from database! Use with caution.
+	 * @return void
+	 */
 	public static function reset()
 	{
 		self::selectDatabase();
@@ -232,7 +261,7 @@ class Model
 	}
 
 	/**
-     * Converts a word into the format for a Red Model table name. Converts 'ModelName' to 'model_name'.
+     * Converts a word into the format for a RedModel table name. Converts 'ModelName' to 'model_name'.
      *
      * @param string $word The word to tableize.
      *
