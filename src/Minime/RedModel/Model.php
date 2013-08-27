@@ -177,11 +177,11 @@ class Model
 		return R::count( self::entity() );
 	}
 
-	public static function wipe()
 	/**
 	 * Wipe entire table and reset primary key sequence (TRUNCATE).
 	 * @return void
 	 */
+	public static function truncate()
 	{
 		self::selectDatabase();
 		return R::wipe( self::entity() );

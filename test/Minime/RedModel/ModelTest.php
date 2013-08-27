@@ -211,7 +211,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		{
 			(new FooClass())->save();
 		}
-		FooClass::wipe();
+		FooClass::truncate();
 		$this->assertEquals(0, count(FooClass::all()));
 	}
 
