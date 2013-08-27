@@ -49,13 +49,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 	public function saving()
 	{
 		$ids = [];
-		$i = 10;
+		$i = 3;
 		while($i--)
 		{
 			$ids[] = (new FooClass)->save();
 		}
-		$this->assertEquals(10, FooClass::count());
-		$this->assertSame(range(1, 10), $ids);
+		$this->assertEquals(3, FooClass::count());
+		$this->assertSame(range(1, 3), $ids);
 	}
 
 	/**
@@ -71,18 +71,18 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
 		$ids_db1 = [];
 		$ids_db2 = [];
-		$i = 10;
+		$i = 3;
 		while($i--)
 		{
 			$ids_db1[] = (new FooClass)->save();
 			$ids_db2[] = (new FooAlternativeDatabase)->save();
 		}
 
-		$this->assertEquals(10, FooClass::count());
-		$this->assertSame(range(1, 10), $ids_db1);
+		$this->assertEquals(3, FooClass::count());
+		$this->assertSame(range(1, 3), $ids_db1);
 
-		$this->assertEquals(10, FooAlternativeDatabase::count());
-		$this->assertSame(range(1, 10), $ids_db2);
+		$this->assertEquals(3, FooAlternativeDatabase::count());
+		$this->assertSame(range(1, 3), $ids_db2);
 
 		FooAlternativeDatabase::reset();
 	}
@@ -119,35 +119,14 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			(new FooClass)->save();
 		}
 		$this->assertSame(TRUE, (new FooClass(3))->delete());
-		$this->assertSame(NULL, (new FooClass(3))->delete());
+		$this->assertSame(FALSE, (new FooClass(3))->delete());
 		$this->assertEquals(2, FooClass::count());
 
 		$this->assertSame(TRUE, (new FooClass(2))->delete());
-		$this->assertSame(NULL, (new FooClass(2))->delete());
+		$this->assertSame(FALSE, (new FooClass(2))->delete());
 		$this->assertEquals(1, FooClass::count());
 
-		$this->assertSame(NULL, (new FooClass())->delete());
-		$this->assertEquals(1, FooClass::count());
-	}
-
-	public static function delete()
-	{
-		$i = 10;
-		while($i--)
-		{
-			(new FooClass)->save();
-		}
-
-		$this->assertSame(TRUE, (new FooClass(3))->delete());
-		$this->assertSame(NULL, (new FooClass(3))->delete());
-		$this->assertEquals(2, FooClass::count());
-
-		$this->assertSame(TRUE, (new FooClass(2))->delete());
-		$this->assertSame(NULL, (new FooClass(2))->delete());
-		$this->assertEquals(1, FooClass::count());
-
-		$this->assertSame(NULL, (new FooClass())->delete());
-		$this->assertEquals(1, FooClass::count());
+		$this->assertSame(FALSE, (new FooClass())->delete());
 	}
 
 	/**
@@ -188,6 +167,9 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		$foo->save();
 		$this->assertNotEquals(NULL, json_decode($foo->exportJSON()));
 	}
+
+	/**
+	 * @test
 	 * @depends counting
 	 */
 	public function all()
