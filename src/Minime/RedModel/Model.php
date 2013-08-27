@@ -78,11 +78,7 @@ class Model
 	 */
 	public function exportJSON()
 	{
-		$values = [];
-		foreach(func_get_args() as $property)
-		{
-			$values[] = $this->$property;
-		}
+		return json_encode($this->export());
 	}
 
 	/**

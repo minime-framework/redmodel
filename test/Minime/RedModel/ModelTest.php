@@ -180,6 +180,14 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @test
+	 */
+	public function exportJSON()
+	{
+		$foo = new FooClass();
+		$foo->name = 'bar';
+		$foo->save();
+		$this->assertNotEquals(NULL, json_decode($foo->exportJSON()));
+	}
 	 * @depends counting
 	 */
 	public function all()
