@@ -39,6 +39,11 @@ class Model
 
 	public function __set($property, $value)
 	{
+		$this->set($property, $value);
+	}
+
+	public function set($property, $value)
+	{
 		try
 		{			
 			$property_meta = $this->getPropertyAnnotations($property);
@@ -58,6 +63,11 @@ class Model
 	}
 
 	public function __get($property)
+	{
+		return $this->get($property);
+	}
+
+	public function get($property)
 	{
 		return $this->bean->$property;
 	}
