@@ -13,12 +13,9 @@ class Model
 	use Reader;
 
 	private $bean;
-	private $class_meta;
 
 	public function __construct($id = null, \RedBean_OODBBean $bean = null)
-	{
-		$this->class_meta = $this->getClassAnnotations($this);
-		
+	{	
 		self::selectDatabase();
 		
 		if($id)
@@ -119,7 +116,7 @@ class Model
 		// }
 	}
 
-	private function check()
+	private function validate()
 	{
 		if(!$this->checkUniqueConstraints()) return false;
 		return true;
@@ -131,9 +128,10 @@ class Model
 	 */
 	public function save()
 	{
-		if($this->check())
+		if($this->validate())
 		{
-			if($this->class_meta->has('timestamps'))
+			$annotations = $this->getClassAnnotations($this);
+			if($annotations->has('timestamps'))
 			{
 				$this->updateTimestamps();
 			}
