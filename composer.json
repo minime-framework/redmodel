@@ -18,7 +18,6 @@
         "minime/annotations": "dev-master"
     },
     "require-dev": {
-        "satooshi/php-coveralls": "dev-master",
         "psy/psysh": "0.1.0.*@dev"
     },
     "repositories": [

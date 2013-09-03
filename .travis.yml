@@ -6,6 +6,7 @@ php:
 
 before_script:
   - composer self-update
+  - composer require satooshi/php-coveralls:dev-master --no-update --dev
   - composer install --dev --prefer-source
   - cd vendor/gabordemooij/redbean/ && php replica.php && cd -
 
