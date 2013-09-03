@@ -6,7 +6,7 @@ php:
 
 before_script:
   - composer self-update
-  - composer install --dev
+  - composer install --dev --prefer-source
   - cd vendor/gabordemooij/redbean/ && php replica.php && cd -
 
 after_script:
