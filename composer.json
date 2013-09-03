@@ -28,6 +28,6 @@
     ],
     "autoload": {
         "psr-0": { "Minime": "src" },
-        "files" : ["vendor/gabordemooij/redbean/rbextra.php"]
+        "files" : ["vendor/gabordemooij/redbean/rb.php"]
     }
 }
