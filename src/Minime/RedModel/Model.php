@@ -224,6 +224,15 @@ class Model
 		R::nuke();
 	}
 
+	/**
+	 * Switch to annotated dabasase declared in model class
+	 * trhoug @database annotation:
+	 * <code>
+	 * # ...
+	 * @database test
+	 * # ...
+	 * </code>
+	 */
 	public static function selectDatabase()
 	{
 		$db_name = 'default';
