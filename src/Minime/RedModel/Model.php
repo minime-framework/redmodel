@@ -90,21 +90,6 @@ class Model
 		return json_encode($this->export());
 	}
 
-	// /**
-	//  * Export a list of properties from bean based on a whitelist
-	//  * @param  array $whitelist Whitelist of properties to be exported
-	//  */
-	// public function whitelist($whitelist)
-	// {
-	// 	if(!is_array($whitelist))
-	// 	{
-	// 		throw new \InvalidArgumentException("Argument must be an array of valid propertie names");
-	// 	}
-	// 	$values = [];
-	// 	foreach($whitelist as $property) $values[] = $this->$property;
-	// 	return $values;
-	// }
-
 	/**
 	 * @todo Add database agnostic logic to check unique constrainsts of values
 	 */
