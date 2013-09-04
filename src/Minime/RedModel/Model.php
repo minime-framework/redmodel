@@ -2,15 +2,15 @@
 
 namespace Minime\RedModel;
 
-use Minime\Annotations\Load as Meta;
-use Minime\Annotations\Traits\Reader;
+use Minime\Annotations\Facade as Meta;
+use Minime\Annotations\Traits\Reader as AnnotationsReader;
 use R;
 use \DateTime;
 use \InvalidArgumentException;
 
 class Model
 {
-	use Reader;
+	use AnnotationsReader;
 
 	private $bean;
 
@@ -197,7 +197,7 @@ class Model
 
 	public static function entity()
 	{
-		$annotations = Meta::fromClass(get_called_class());
+		$annotations = Meta::getClassAnnotations(get_called_class());
 
 		if($annotations->has('table'))
 		{
@@ -234,7 +234,7 @@ class Model
 	public static function selectDatabase()
 	{
 		$db_name = 'default';
-		$annotations = Meta::fromClass(get_called_class());
+		$annotations = Meta::getClassAnnotations(get_called_class());
 		if($annotations->has('db'))
 		{
 			$db_name = $annotations->get('db');
