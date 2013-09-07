@@ -15,17 +15,11 @@
     "require": {
         "php": ">=5.4.0",
         "gabordemooij/redbean": "dev-master",
-        "minime/annotations": "dev-master"
+        "minime/annotations": "1.*"
     },
     "require-dev": {
         "psy/psysh": "0.1.0.*@dev"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/marcioAlmada/minime.annotations"
-        }
-    ],
     "autoload": {
         "psr-0": { "Minime": "src" },
         "files" : ["vendor/gabordemooij/redbean/rb.php"]
