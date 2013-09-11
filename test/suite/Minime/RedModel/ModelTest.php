@@ -42,6 +42,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			R::store( R::dispense( GenericModel::entity() ) );
 		}
 		$this->assertEquals(3, GenericModel::count());
+		$this->assertEquals(3, (new GenericModel)->count());
 	}
 
 	/**
@@ -68,16 +69,16 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 	{
 		$foo = new GenericModel;
 		$foo->save();
-		$this->assertEquals($foo->created_at, $foo->updated_at);
+		$this->assertEquals($foo->created_at(), $foo->updated_at());
 
 		$foo->save();
-		$this->assertEquals($foo->created_at, $foo->updated_at);
+		$this->assertEquals($foo->created_at(), $foo->updated_at());
 		
 		sleep(1);
 
-		$foo->name = "bar";
+		$foo->name("bar");
 		$foo->save();
-		$this->assertNotEquals($foo->created_at, $foo->updated_at);
+		$this->assertNotEquals($foo->created_at(), $foo->updated_at());
 	}
 
 	/**
@@ -110,7 +111,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 	{
 
 		$foo = new GenericModel();
-		$foo->name = 'bar';
+		$foo->name('bar');
 		$this->assertTrue(in_array('name', array_keys($foo->export())));
 		$foo->save();
 		$this->assertTrue(in_array('name', array_keys($foo->export())));
@@ -127,7 +128,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 	public function setUndefinedCollumnFails()
 	{
 		$retrieved_foo = new GenericModel();
-		$retrieved_foo->undefined_column = 'error';
+		$retrieved_foo->undefined_column('error');
 	}
 
 	/**
@@ -136,7 +137,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 	public function exportJSON()
 	{
 		$foo = new GenericModel();
-		$foo->name = 'bar';
+		$foo->name('bar');
 		$foo->save();
 		$this->assertNotEquals(NULL, json_decode($foo->exportJSON()));
 	}
@@ -188,7 +189,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		while($i--)
 		{
 			$foo = new GenericModel();
-			$foo->name = "marcio";
+			$foo->name("marcio");
 			$foo->save();
 		}
 		$this->assertEquals(1, count(GenericModel::all()));

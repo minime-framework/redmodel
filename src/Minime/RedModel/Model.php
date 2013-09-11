@@ -12,6 +12,11 @@ class Model
 {
 	use AnnotationsReader;
 
+	/**
+	 * Bean
+	 * 
+	 * @var \RedBean_OODBBean
+	 */
 	private $bean;
 
 	public function __construct($id = null, \RedBean_OODBBean $bean = null)
@@ -34,9 +39,17 @@ class Model
 		return $this;
 	}
 
-	public function __set($property, $value)
+	public function __call($method, $arguments)
 	{
-		$this->set($property, $value);
+		if(isset($arguments[0]))
+		{
+			$value = $arguments[0];
+			return $this->set($method, $value);
+		}
+		else
+		{
+			return $this->get($method);
+		}
 	}
 
 	public function set($property, $value)
@@ -57,11 +70,6 @@ class Model
 			throw new InvalidArgumentException($message);
 		}
 		return true;
-	}
-
-	public function __get($property)
-	{
-		return $this->get($property);
 	}
 
 	public function get($property)
