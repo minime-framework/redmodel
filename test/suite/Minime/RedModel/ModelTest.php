@@ -144,6 +144,14 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @test
+	 */
+	public function getColumns()
+	{
+		$this->assertSame(['name'], (new GenericModel())->getColumns());
+	}
+
+	/**
+	 * @test
 	 * @depends counting
 	 */
 	public function all()

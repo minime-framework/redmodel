@@ -86,6 +86,29 @@ class Model
 		return $this->bean->export();
 	}
 
+	public function getColumns()
+	{
+		$columns = [];
+
+		$properties = array_keys(get_object_vars($this));
+		foreach($properties as $property)
+		{
+			try
+			{
+				if($this->getPropertyAnnotations($property)->has('column'))
+				{
+					$columns[] = $property;
+				}
+			}
+			catch(\ReflectionException $e)
+			{
+
+			}
+		}
+
+		return $columns;
+	}
+
 	/**
 	 * Export bean properties to JSON.
 	 * @return string JSON
