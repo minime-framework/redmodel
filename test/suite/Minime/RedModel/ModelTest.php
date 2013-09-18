@@ -4,7 +4,6 @@ namespace Minime\RedModel;
 
 use \Minime\RedModel\Fixtures\GenericModel;
 use \Minime\RedModel\Fixtures\TableFromModelClassName;
-
 use \R;
 
 class ModelTest extends \PHPUnit_Framework_TestCase
@@ -201,5 +200,23 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			$foo->save();
 		}
 		$this->assertEquals(1, count(GenericModel::all()));
+	}
+
+	/**
+	 * @test
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function incompatileBeanShouldRaiseException()
+	{
+		new GenericModel(null, R::dispense('wrong_bean_type'));
+	}
+
+	/**
+	 * @test
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function invalidIdShouldRaiseException()
+	{
+		new GenericModel([]);
 	}
 }

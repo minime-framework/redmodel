@@ -21,22 +21,30 @@ class Model
 
 	public function __construct($id = null, \RedBean_OODBBean $bean = null)
 	{	
-		self::selectDatabase();
-		
-		if($id)
+		$database = self::selectDatabase();
+		$entity = self::entity();
+		$called = get_called_class();
+
+		if(NULL !== $id)
 		{
+			if(!is_integer($id))
+			{
+				throw new \InvalidArgumentException("ID must be a valid integer.");
+			}
 			$this->bean = R::load(self::entity(), $id);
 		}
 		else if($bean)
 		{
+			if($entity !== $bean->getMeta('type'))
+			{
+				throw new \InvalidArgumentException("Invalid bean for model {{$called}} managing {{$entity}} entity");
+			}
 			$this->bean = $bean;
 		}
 		else
 		{
-			$this->bean = R::dispense( self::entity() );
+			$this->bean = R::dispense($entity);
 		}
-
-		return $this;
 	}
 
 	public function __call($method, $arguments)
