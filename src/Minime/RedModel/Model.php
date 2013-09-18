@@ -45,6 +45,13 @@ class Model
 		}
 	}
 
+	/**
+	 * Model overload for getters and setters
+	 *
+	 * @param  string $method
+	 * @param  string $arguments
+	 * @return mixed
+	 */
 	public function __call($method, $arguments)
 	{
 		if(isset($arguments[0]))
@@ -71,7 +78,8 @@ class Model
 
 	/**
 	 * Export all bean properties to associative array.
-	 * return array Associative array: `["property" => "values"]`
+	 * 
+	 * @return array Associative array: `["property" => "values"]`
 	 */
 	public function export()
 	{
@@ -131,6 +139,7 @@ class Model
 
 	/**
 	 * Export bean properties to JSON.
+	 * 
 	 * @return string JSON
 	 */
 	public function exportJSON()
@@ -175,6 +184,7 @@ class Model
 
 	/**
 	 * Save to database.
+	 * 
 	 * @return integer Primary key of saved row
 	 */
 	public function save()
@@ -190,9 +200,11 @@ class Model
 		}
 		return false;
 	}
+
 	
 	/**
 	 * Delete from database.
+	 * 
 	 * @return bool
 	 */
 	public function delete()
@@ -211,6 +223,7 @@ class Model
 
 	/**
 	 * Load all rows from table.
+	 * 
 	 * @return array of Minime\RedModel\Model
 	 */
 	public static function all()
@@ -228,6 +241,7 @@ class Model
 	
 	/**
 	 * Count rows from table.
+	 * 
 	 * @return integer
 	 */
 	public static function count()
@@ -238,6 +252,7 @@ class Model
 
 	/**
 	 * Wipe entire table and reset primary key sequence (TRUNCATE).
+	 * 
 	 * @return void
 	 */
 	public static function truncate()
@@ -265,6 +280,7 @@ class Model
 
 	/**
 	 * Remove all entities from database! Use with caution.
+	 * 
 	 * @return void
 	 */
 	public static function reset()
@@ -275,12 +291,9 @@ class Model
 
 	/**
 	 * Switch to annotated dabasase declared in model class
-	 * trhoug @database annotation:
-	 * <code>
-	 * # ...
-	 * @database test
-	 * # ...
-	 * </code>
+	 * trhoug "@database" annotation: `@database test`
+	 *
+	 * @return string the current database name
 	 */
 	public static function selectDatabase()
 	{
@@ -295,7 +308,7 @@ class Model
 	}
 
 	/**
-	 * Update the creation and update timestamps.
+	 * Update the "created_at" and "update_at" fields with their respective timestamps.
 	 *
 	 * @return void
 	 */
@@ -316,7 +329,7 @@ class Model
 	/**
 	 * Get a fresh timestamp for the model.
 	 *
-	 * @return DateTime
+	 * @return \DateTime
 	 */
 	public function freshTimestamp()
 	{
@@ -327,7 +340,6 @@ class Model
      * Converts a word into the format for a RedModel table name. Converts 'ModelName' to 'model_name'.
      *
      * @param string $word The word to tableize.
-     *
      * @return string The tableized word.
      */
     private static function tableize($word)
