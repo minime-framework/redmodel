@@ -5,7 +5,6 @@ namespace Minime\RedModel;
 use Minime\Annotations\Facade as Meta;
 use Minime\Annotations\Traits\Reader as AnnotationsReader;
 use R;
-use \DateTime;
 
 class Model
 {
@@ -321,7 +320,7 @@ class Model
 	 */
 	public function freshTimestamp()
 	{
-		return new DateTime;
+		return new \DateTime;
 	}
 
 	/**
