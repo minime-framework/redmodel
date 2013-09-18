@@ -6,7 +6,6 @@ use Minime\Annotations\Facade as Meta;
 use Minime\Annotations\Traits\Reader as AnnotationsReader;
 use R;
 use \DateTime;
-use \InvalidArgumentException;
 
 class Model
 {
@@ -62,22 +61,8 @@ class Model
 
 	public function set($property, $value)
 	{
-		try
-		{			
-			$property_meta = $this->getPropertyAnnotations($property);
-			if($property_meta->has('column'))
-			{
-				$this->bean->$property = $value;
-			}
-		}
-		catch(\ReflectionException $e)
-		{
-			$class = get_called_class();
-			$entity = self::entity();
-			$message = "Column \"{$property}\" not declared for Model {$class} managing \"{$entity}\" entity";
-			throw new InvalidArgumentException($message);
-		}
-		return true;
+		$this->hasColumnOrFail($property);
+		$this->bean->$property = $value;
 	}
 
 	public function get($property)
@@ -92,6 +77,34 @@ class Model
 	public function export()
 	{
 		return $this->bean->export();
+	}
+
+	private function hasColumn($column)
+	{
+		try
+		{			
+			$this->hasColumnOrFail($column);
+			return true;
+		}
+		catch(\ReflectionException $e)
+		{
+		}
+		return false;
+	}
+
+	private function hasColumnOrFail($column)
+	{
+		try
+		{
+			$annotations = $this->getPropertyAnnotations($column);
+		}
+		catch(\ReflectionException $e)
+		{
+			$class = get_called_class();
+			$entity = self::entity();
+			$message = "Undeclared column \"{$column}\" for {$class} managing \"{$entity}\" entity";
+			throw new \InvalidArgumentException($message);
+		}
 	}
 
 	public function getColumns()
