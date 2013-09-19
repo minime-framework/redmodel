@@ -148,6 +148,15 @@ class Model
 	}
 
 	/**
+	 * Unbox bean
+	 * @return \RedBean_OODBBean
+	 */
+	public function unboxBean()
+	{
+		return $this->bean;
+	}
+
+	/**
 	 * @todo Add database agnostic logic to check unique constrainsts of values
 	 */
 	private function checkUniqueConstraints()
