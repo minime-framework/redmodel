@@ -355,4 +355,42 @@ class Model
     {
         return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $word));
     }
+
+    /**
+     * @todo  Associate many description
+     * 
+     * @param  array $models
+     * @return self
+     */
+	public function associateMany($models)
+	{
+		$manager = new AssociationManager($this);
+		$manager->relate_one_to_many($models);
+		return $this;
+	}
+
+	/**
+	 * @todo  Unassociate many description
+	 * 
+	 * @param  array $models
+	 * @return self
+	 */
+	public function unassociateMany($models)
+	{
+		$manager = new AssociationManager($this);
+		$manager->unrelate_one_to_many($models);
+		return $this;
+	}
+
+	/**
+	 * @todo  Retrieve many description
+	 * 
+	 * @param  [type] $model [description]
+	 * @return array
+	 */
+	public function retrieveMany($model)
+	{
+		$manager = new AssociationManager($this);
+		return $manager->get_one_to_many($model);
+	}
 }
