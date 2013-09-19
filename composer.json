@@ -15,6 +15,7 @@
     "require": {
         "php": ">=5.4.0",
         "gabordemooij/redbean": "dev-master",
+        "eloquent/cosmos": "2.3.*",
         "minime/annotations": "1.*"
     },
     "require-dev": {
