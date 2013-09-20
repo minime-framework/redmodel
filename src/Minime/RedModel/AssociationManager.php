@@ -26,11 +26,13 @@ class AssociationManager
 			throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
 		}
 
-		$this->validateAssociationOrFail();
-
 		foreach($models as $model)
 		{
-			$own = 'own' . ClassName::fromString(get_class($model))->shortName();
+			$related_class = '\\'.get_class($model);
+			$relations = $this->model->getClassAnnotations()->grepNamespace('rel')->grep('has-many');
+			$this->validateAssociationOrFail($relations, $related_class);
+
+			$own = 'own' . ClassName::fromString($related_class)->shortName();
 			$this->model->unboxBean()->{$own}[] = $model->unboxBean();
 		}
 	}
@@ -42,19 +44,24 @@ class AssociationManager
 			throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
 		}
 
-		$this->validateAssociationOrFail();
-
 		foreach ($models as $model)
 		{
-			$own = 'own' . ClassName::fromString(get_class($model))->shortName();
+			$related_class = '\\'.get_class($model);
+			$relations = $this->model->getClassAnnotations()->grepNamespace('rel')->grep('has-many');
+			$this->validateAssociationOrFail($relations, $related_class);
+
+			$own = 'own' . ClassName::fromString($related_class)->shortName();
 			unset($this->model->unboxBean()->{$own}[$model->id()]);
 		}
 	}
 
 	public function getOneToMany($related_class)
-	{
-		$this->validateAssociationOrFail();
-		
+	{		
+		$this->validateAssociationOrFail(
+			$this->model->getClassAnnotations()->grepNamespace('rel')->grep('has-many'),
+			$related_class
+		);
+
 		$RelatedClass = $this->solveRelatedClass($related_class);
 
 		$own = 'own' . $RelatedClass->shortName();
@@ -81,9 +88,19 @@ class AssociationManager
 	/**
 	 * @todo Throw exception in case of undeclared association
 	 */
-	protected function validateAssociationOrFail()
+	protected function validateAssociationOrFail($annotations, $related_class)
 	{
-		// $annotations = $this->model->getClassAnnotations()->grepNamespace('rel');
+		$RelatedClass = $this->solveRelatedClass($related_class);
+		
+		foreach($annotations as $declared_class)
+		{
+			$DeclaredClass = $this->solveRelatedClass($declared_class);
+
+			if(!$RelatedClass->isRuntimeEquivalentTo($DeclaredClass))
+			{
+				throw new InvalidAssociationException();
+			}
+		}
 	}
 
 	private function solveRelatedClass($related_class_name)
@@ -92,10 +109,16 @@ class AssociationManager
 
 		if(!$RelatedClass->isAbsolute())
 		{
-			$ModelClassName = ClassName::fromString(get_class($this->model));
-			$RelatedClass = $ModelClassName->parent()->join($RelatedClass);
+			$RelatedClass = $this->solveRelatedShortNameClass($RelatedClass);
 		}
 
 		return $RelatedClass;
 	}
+
+	private function solveRelatedShortNameClass(ClassName $RelatedClass)
+	{
+		$ModelClassName = ClassName::fromString(get_class($this->model));
+		return $ModelClassName->parent()->toAbsolute()->join($RelatedClass);
+	}
 }
+

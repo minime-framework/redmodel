@@ -37,7 +37,7 @@ class AssociationTest extends \PHPUnit_Framework_TestCase
 		$this->assertCount(2, $book->retrieveMany('Page'));
 
 		$book->associateMany([$page3])->save();
-		$this->assertCount(3, $book->retrieveMany('Page'));
+		$this->assertCount(3, $book->retrieveMany('\Minime\RedModel\Fixtures\Associations\Page'));
 	}
 
 	/**
@@ -57,17 +57,27 @@ class AssociationTest extends \PHPUnit_Framework_TestCase
 		$this->assertCount(1, $book->retrieveMany('Page'));
 
 		$book->unassociateMany([$page2])->save();
-		$this->assertCount(0, $book->retrieveMany('Page'));
+		$this->assertCount(0, $book->retrieveMany('\Minime\RedModel\Fixtures\Associations\Page'));
 	}
 
 	/**
-	 * @_test_
+	 * @test
 	 * @expectedException \Minime\RedModel\InvalidAssociationException
 	 */
 	public function invalidHasManyAssociation()
 	{
-		$a = new Book();
-		$z = new UnrelatedModel();
-		$a->associateMany($z);
+		$book = new Book();
+		$unrelated = new UnrelatedModel();
+		$book->associateMany([$unrelated]);
+	}
+
+	/**
+	 * @test
+	 * @expectedException \Minime\RedModel\InvalidAssociationException
+	 */
+	public function invalidHasManyAssociationRetrieval()
+	{
+		$book = new Book();
+		$book->retrieveMany('UnrelatedModel');
 	}
 }
