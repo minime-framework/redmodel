@@ -51,25 +51,19 @@ class AssociationManager
 		}
 	}
 
-	public function get_one_to_many($class_name)
+	public function get_one_to_many($related_class)
 	{
 		$this->validateAssociationOrFail();
-
-		$ModelClassName = ClassName::fromString(get_class($this->model));
-		$RelatedClassName = ClassName::fromString($class_name);
-
-		if(!$RelatedClassName->isAbsolute())
-		{
-			$RelatedClassName = $ModelClassName->parent()->join($RelatedClassName);
-		}
-
-		$own = 'own' . $RelatedClassName->shortName();
 		
-		$related_class = $RelatedClassName->string();
+		$RelatedClass = $this->solveRelatedClass($related_class);
+
+		$own = 'own' . $RelatedClass->shortName();
+		
+		$related = $RelatedClass->string();
 		$results = [];
 		foreach($this->model->unboxBean()->$own as $related_bean)
 		{
-			$results[] = new $related_class(null, $related_bean);
+			$results[] = new $related(null, $related_bean);
 		}
 		return $results;
 	}
@@ -98,5 +92,18 @@ class AssociationManager
 	protected function validateAssociationOrFail()
 	{
 		// $annotations = $this->model->getClassAnnotations()->grepNamespace('rel');
+	}
+
+	private function solveRelatedClass($related_class_name)
+	{
+		$RelatedClass = ClassName::fromString($related_class_name);
+
+		if(!$RelatedClass->isAbsolute())
+		{
+			$ModelClassName = ClassName::fromString(get_class($this->model));
+			$RelatedClass = $ModelClassName->parent()->join($RelatedClass);
+		}
+
+		return $RelatedClass;
 	}
 }
