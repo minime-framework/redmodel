@@ -28,14 +28,10 @@ class AssociationTest extends \PHPUnit_Framework_TestCase
 	public function associateMany()
 	{
 		$book = new Book;
-		$book->save();
 
 		$page1 = new Page;
 		$page2 = new Page;
 		$page3 = new Page;
-		$page1->save();
-		$page2->save();
-		$page3->save();
 
 		$book->associateMany([$page1, $page2])->save();
 		$this->assertCount(2, $book->retrieveMany('Page'));
@@ -51,7 +47,6 @@ class AssociationTest extends \PHPUnit_Framework_TestCase
 	public function unassociateMany()
 	{
 		$book = new Book;
-		$book->save();
 
 		$page1 = new Page;
 		$page2 = new Page;
