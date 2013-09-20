@@ -19,7 +19,7 @@ class AssociationManager
 		$this->model = $model;
 	}
 
-	public function relate_one_to_many($models)
+	public function relateOneToMany($models)
 	{
 		if(!is_array($models))
 		{
@@ -35,7 +35,7 @@ class AssociationManager
 		}
 	}
 
-	public function unrelate_one_to_many($models)
+	public function unrelateOneToMany($models)
 	{
 		if(!is_array($models))
 		{
@@ -51,7 +51,7 @@ class AssociationManager
 		}
 	}
 
-	public function get_one_to_many($related_class)
+	public function getOneToMany($related_class)
 	{
 		$this->validateAssociationOrFail();
 		
@@ -68,22 +68,14 @@ class AssociationManager
 		return $results;
 	}
 
-	public function relate_one_to_one(Model $item)
+	public function relateOneToOne(Model $item)
 	{
 
 	}
 
-	public function get_one_to_one()
+	public function retrieveOneToOne()
 	{
 
-	}
-
-	public function n_n(Model $item)
-	{
-		if(!is_array($itens))
-		{
-			throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
-		}
 	}
 
 	/**

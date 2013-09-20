@@ -365,7 +365,7 @@ class Model
 	public function associateMany($models)
 	{
 		$manager = new AssociationManager($this);
-		$manager->relate_one_to_many($models);
+		$manager->relateOneToMany($models);
 		return $this;
 	}
 
@@ -378,7 +378,7 @@ class Model
 	public function unassociateMany($models)
 	{
 		$manager = new AssociationManager($this);
-		$manager->unrelate_one_to_many($models);
+		$manager->unrelateOneToMany($models);
 		return $this;
 	}
 
@@ -391,6 +391,6 @@ class Model
 	public function retrieveMany($model)
 	{
 		$manager = new AssociationManager($this);
-		return $manager->get_one_to_many($model);
+		return $manager->getOneToMany($model);
 	}
 }
