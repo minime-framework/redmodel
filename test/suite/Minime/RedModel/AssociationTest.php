@@ -14,6 +14,7 @@ class AssociationTest extends \PHPUnit_Framework_TestCase
 	{
 		R::setup();
 		R::setStrictTyping( false );
+		// R::log('/tmp/redbean.sql');
 		// R::debug();
 	}
 
@@ -33,16 +34,34 @@ class AssociationTest extends \PHPUnit_Framework_TestCase
 		$page2 = new Page;
 		$page3 = new Page;
 
-		$book->associateMany([$page1, $page2])->save();
-		$this->assertCount(2, $book->retrieveMany('Page'));
+		$book_id = $book->associateMany([$page1, $page2])->save();
+		$this->assertCount(2, R::load('book', $book_id)->ownPage);
 
 		$book->associateMany([$page3])->save();
+		$this->assertCount(3, R::load('book', $book_id)->ownPage);
+	}
+
+	/**
+	 * @test
+	 * @depends associateMany
+	 */
+	public function retrieveMany()
+	{
+		$book = new Book;
+
+		$page1 = new Page;
+		$page2 = new Page;
+		$page3 = new Page;
+
+		$book->associateMany([$page1, $page2, $page3])->save();
+		$this->assertCount(3, $book->retrieveMany('Page'));
 		$this->assertCount(3, $book->retrieveMany('\Minime\RedModel\Fixtures\Associations\Page'));
 	}
 
 	/**
 	 * @test
 	 * @depends associateMany
+	 * @depends retrieveMany
 	 */
 	public function unassociateMany()
 	{
@@ -55,8 +74,10 @@ class AssociationTest extends \PHPUnit_Framework_TestCase
 
 		$book->unassociateMany([$page1])->save();
 		$this->assertCount(1, $book->retrieveMany('Page'));
+		$this->assertCount(1, $book->retrieveMany('\Minime\RedModel\Fixtures\Associations\Page'));
 
 		$book->unassociateMany([$page2])->save();
+		$this->assertCount(0, $book->retrieveMany('Page'));
 		$this->assertCount(0, $book->retrieveMany('\Minime\RedModel\Fixtures\Associations\Page'));
 	}
 
