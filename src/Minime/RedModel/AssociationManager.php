@@ -26,12 +26,12 @@ class AssociationManager
 			throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
 		}
 
+		$relations = $this->getOwnManyAssociationsMetadata();
+
 		foreach($models as $model)
 		{
 			$related_class = '\\'.get_class($model);
-			$relations = $this->model->getClassAnnotations()->grepNamespace('rel')->grep('has-many');
 			$this->validateAssociationOrFail($relations, $related_class);
-
 			$own = 'own' . ClassName::fromString($related_class)->shortName();
 			$this->model->unboxBean()->{$own}[] = $model->unboxBean();
 		}
@@ -44,21 +44,26 @@ class AssociationManager
 			throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
 		}
 
+		$relations = $this->getOwnManyAssociationsMetadata();
+
 		foreach ($models as $model)
 		{
 			$related_class = '\\'.get_class($model);
-			$relations = $this->model->getClassAnnotations()->grepNamespace('rel')->grep('has-many');
 			$this->validateAssociationOrFail($relations, $related_class);
-
 			$own = 'own' . ClassName::fromString($related_class)->shortName();
 			unset($this->model->unboxBean()->{$own}[$model->id()]);
 		}
 	}
 
+	protected function getOwnManyAssociationsMetadata()
+	{
+		return $this->model->getClassAnnotations()->grepNamespace('redmodel')->grep('own-many');
+	}
+
 	public function getOneToMany($related_class)
 	{		
 		$this->validateAssociationOrFail(
-			$this->model->getClassAnnotations()->grepNamespace('rel')->grep('has-many'),
+			$this->getOwnManyAssociationsMetadata(),
 			$related_class
 		);
 

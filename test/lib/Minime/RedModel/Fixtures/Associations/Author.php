@@ -3,7 +3,7 @@
 namespace Minime\RedModel\Fixtures\Associations;
 
 /**
- * @rel.own Book
+ * @redmodel.own-many Book
  */
 class Author extends \Minime\RedModel\Model
 {

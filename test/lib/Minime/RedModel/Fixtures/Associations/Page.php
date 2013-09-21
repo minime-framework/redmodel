@@ -3,8 +3,8 @@
 namespace Minime\RedModel\Fixtures\Associations;
 
 /**
- * @rel.belongs-to-one Book
- * @rel.has-one PageContent
+ * @redmodel.belongs-to-one Book
+ * @redmodel.own-one PageContent
  */
 class Page extends \Minime\RedModel\Model
 {
