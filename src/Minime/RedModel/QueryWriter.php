@@ -11,10 +11,10 @@ class QueryWriter
 
 	public function __construct($class)
 	{
-		if(method_exists($class,'entity'))
+		if(method_exists($class,"entity"))
 		{
 			$this->class = $class;
-			$this->writer = R::$f->begin()->select('*')->from($class::entity());
+			$this->writer = R::$f->begin()->select("*")->from($class::entity());
 		}
 		else
 		{
@@ -59,7 +59,7 @@ class QueryWriter
 			foreach ($value as $cond) {
 				$condition[$key][] = "?";
 			}
-			$this->writer->open()->addSQL(join(', ', $condition[$key]))->close();
+			$this->writer->open()->addSQL(join(", ", $condition[$key]))->close();
 			foreach ($value as $id)
 			{
 				$this->put($id);
@@ -135,7 +135,7 @@ class QueryWriter
 			throw new \InvalidArgumentException("Put value limit");
 		}
 		#
-		# mysql | postgres
+		# mysql | postgres | sqlite
 		# select col from tbl limit 20;
 		$this->writer->addSQL(" LIMIT $limit ");
 		#
@@ -147,5 +147,11 @@ class QueryWriter
 		# select top 20 col from tbl;
 		// $this->select(" TOP $limit ");
 		return $this;
+	}
+
+	public function count()
+	{
+		$class = $this->class;
+		return R::count( $class::entity() );
 	}
 }

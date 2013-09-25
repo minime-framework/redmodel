@@ -14,8 +14,6 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 		R::setup();
 		R::setStrictTyping( false );
 		$this->writer = new QueryWriter('\Minime\RedModel\Fixtures\QueryModel');
-
-		R::log('/tmp/redmodel.sql');
 	}
 
 	public function tearDown()
@@ -138,22 +136,11 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @test
 	 */
-	public function select()
+	public function countAll()
 	{
 		foreach(R::dispense('query_model', 3) as $bean){
 			R::store($bean);
 		};
-		// $this->writer->select("column1");
-	}
-
-	/**
-	 * @test
-	 */
-	public function distinct()
-	{
-		foreach(R::dispense('query_model', 3) as $bean){
-			R::store($bean);
-		};
-		// $this->writer->select("column1")->distinct();
+		$this->assertEquals(3, $this->writer->count());
 	}
 }
