@@ -36,6 +36,19 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	 * @test
 	 * @depends all
 	 */
+	public function limit()
+	{
+		foreach(R::dispense("query_model", 3) as $bean){
+			R::store($bean);
+		};
+		$this->assertCount(1, $this->writer->limit(1)->all());
+	}
+
+	/**
+	 * @test
+	 * @depends all
+	 * @depends limit
+	 */
 	public function first()
 	{
 		$i = 1;

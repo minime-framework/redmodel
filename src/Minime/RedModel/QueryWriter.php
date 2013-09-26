@@ -45,22 +45,20 @@ class QueryWriter
 
 	public function first($limit = 1)
 	{
-		$this->limit($limit);
-		$result = $this->all();
+		$result = $this->limit($limit)->all();
 		return (count($result) > 1) ? $result : $result[0];
 	}
 
 	public function last($limit = 1)
 	{
-		$this->order(" id DESC ");
-		return $this->first($limit);
+		return $this->order(" id DESC ")->first($limit);
 	}
 
-	private function whereWithIn($values)
+	private function whereWithIn($args)
 	{
 		$this->where(" 1=1 ");
 		$condition = [];
-		foreach ($values as $key => $value)
+		foreach ($args as $key => $values)
 		{
 			if(empty($key))
 			{
@@ -68,20 +66,19 @@ class QueryWriter
 			}
 			else
 			{
-				$this->writer->addSQL(" AND ");
-				$this->writer->addSQL(" $key IN ");
+				$this->writer->addSQL(" AND $key IN ");
 			}
-			if(count($value) == 0)
+			if(count($values) == 0)
 			{
 				throw new \InvalidArgumentException("Values is empty.");
 			}
 			else
 			{
-				foreach ($value as $cond) {
+				while (each($values)) {
 					$condition[$key][] = "?";
 				}
 				$this->writer->open()->addSQL(join(", ", $condition[$key]))->close();
-				foreach ($value as $id)
+				foreach ($values as $id)
 				{
 					$this->put($id);
 				}
@@ -185,4 +182,18 @@ class QueryWriter
 		}
 	}
 
+	//select
+	//from
+	//distinct
+	//maximum
+	//minimum
+	//sum
+
+	//joins
+	//group
+	//having
+	
+	//offset
+
+	//exists
 }
