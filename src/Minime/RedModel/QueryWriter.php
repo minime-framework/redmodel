@@ -8,6 +8,7 @@ class QueryWriter
 {
 	private $class;
 	private $writer;
+	private $hasFilter = false;
 
 	public function __construct($class)
 	{
@@ -27,10 +28,17 @@ class QueryWriter
 	{
 		$class   = $this->class;
 		$results = [];
-		foreach($this->writer->get() as $item)
+		if($items = $this->writer->get())
 		{
-			$bean = R::dispense($class::entity());
-			$results[] = new $class(null, $bean->import($item));
+			foreach($items as $item)
+			{
+				$bean = R::dispense($class::entity());
+				$results[] = new $class(null, $bean->import($item));
+			}
+		}
+		else
+		{
+			throw new \InvalidArgumentException("Error in query execution.");
 		}
 		return $results;
 	}
@@ -51,18 +59,32 @@ class QueryWriter
 	private function whereWithIn($values)
 	{
 		$this->where(" 1=1 ");
-
 		$condition = [];
-		foreach ($values as $key => $value) {
-			$this->writer->addSQL(" AND ");
-			$this->writer->addSQL(" $key IN ");
-			foreach ($value as $cond) {
-				$condition[$key][] = "?";
-			}
-			$this->writer->open()->addSQL(join(", ", $condition[$key]))->close();
-			foreach ($value as $id)
+		foreach ($values as $key => $value)
+		{
+			if(empty($key))
 			{
-				$this->put($id);
+				throw new \InvalidArgumentException("Attribute is empty.");
+			}
+			else
+			{
+				$this->writer->addSQL(" AND ");
+				$this->writer->addSQL(" $key IN ");
+			}
+			if(count($value) == 0)
+			{
+				throw new \InvalidArgumentException("Values is empty.");
+			}
+			else
+			{
+				foreach ($value as $cond) {
+					$condition[$key][] = "?";
+				}
+				$this->writer->open()->addSQL(join(", ", $condition[$key]))->close();
+				foreach ($value as $id)
+				{
+					$this->put($id);
+				}
 			}
 		}
 	}
@@ -98,6 +120,7 @@ class QueryWriter
 				$this->whereSimple($values);
 			}
 		}
+		$this->hasFilter = true;
 		return $this;
 	}
 
@@ -151,7 +174,15 @@ class QueryWriter
 
 	public function count()
 	{
-		$class = $this->class;
-		return R::count( $class::entity() );
+		if($this->hasFilter)
+		{
+			return count($this->writer->get());
+		}
+		else
+		{
+			$class = $this->class;
+			return R::count( $class::entity() );
+		}
 	}
+
 }

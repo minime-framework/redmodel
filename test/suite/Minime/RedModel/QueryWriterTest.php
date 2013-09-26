@@ -13,7 +13,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	{
 		R::setup();
 		R::setStrictTyping( false );
-		$this->writer = new QueryWriter('\Minime\RedModel\Fixtures\QueryModel');
+		$this->writer = new QueryWriter("\Minime\RedModel\Fixtures\QueryModel");
 	}
 
 	public function tearDown()
@@ -26,7 +26,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function all()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
 			R::store($bean);
 		};
 		$this->assertCount(3, $this->writer->all());
@@ -39,7 +39,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	public function first()
 	{
 		$i = 1;
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
 			$bean->column1 = $i++;
 			R::store($bean);
 		};
@@ -52,7 +52,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function twoFirst()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
 			R::store($bean);
 		};
 		$this->assertCount(2, $this->writer->first(2));
@@ -65,7 +65,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	public function last()
 	{
 		$i = 1;
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
 			$bean->column1 = $i++;
 			R::store($bean);
 		};
@@ -78,7 +78,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function twoLast()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
 			R::store($bean);
 		};
 		$this->assertCount(2, $this->writer->last(2));
@@ -90,8 +90,8 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function whereWithPut()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
-			$bean->column1 = 'x';
+		foreach(R::dispense("query_model", 3) as $bean){
+			$bean->column1 = "x";
 			R::store($bean);
 		};
 		$this->assertCount(3, $this->writer->where("column1 = ?")->put("x")->all());
@@ -103,8 +103,8 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function whereWithoutPut()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
-			$bean->column1 = 'x';
+		foreach(R::dispense("query_model", 3) as $bean){
+			$bean->column1 = "x";
 			R::store($bean);
 		};
 		$this->assertCount(3, $this->writer->where("column1 = ?", "x")->all());
@@ -113,10 +113,24 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @test
 	 * @depends all
+	 * @expectedException InvalidArgumentException
+	 */
+	public function whereWithoutValue()
+	{
+		foreach(R::dispense("query_model", 3) as $bean){
+			$bean->column1 = "x";
+			R::store($bean);
+		};
+		$this->writer->where("column1 = ?")->all();
+	}
+
+	/**
+	 * @test
+	 * @depends all
 	 */
 	public function whereAsIn()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
 			R::store($bean);
 		};
 		$this->assertCount(2, $this->writer->where(["id" => [1, 3]])->all());
@@ -125,12 +139,13 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @test
 	 */
-	public function order()
+	public function whereWithCount()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
+			$bean->column1 = "x";
 			R::store($bean);
 		};
-		$this->assertNotNull($this->writer->order("? ASC")->put("id"));
+		$this->assertEquals(2, $this->writer->where(["id" => [1, 3]])->count());
 	}
 
 	/**
@@ -138,9 +153,46 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function countAll()
 	{
-		foreach(R::dispense('query_model', 3) as $bean){
+		foreach(R::dispense("query_model", 3) as $bean){
 			R::store($bean);
 		};
 		$this->assertEquals(3, $this->writer->count());
+	}
+
+	/**
+	 * @test
+	 * @depends whereAsIn
+	 * @expectedException InvalidArgumentException
+	 */
+	public function attributeIsEmpty()
+	{
+		foreach(R::dispense("query_model", 3) as $bean){
+			R::store($bean);
+		};
+		$this->writer->where(["" => [1, 3]]);
+	}
+
+	/**
+	 * @test
+	 * @depends whereAsIn
+	 * @expectedException InvalidArgumentException
+	 */
+	public function valuesIsEmpty()
+	{
+		foreach(R::dispense("query_model", 3) as $bean){
+			R::store($bean);
+		};
+		$this->writer->where(["id" => []]);
+	}
+
+	/**
+	 * @test
+	 */
+	public function order()
+	{
+		foreach(R::dispense("query_model", 3) as $bean){
+			R::store($bean);
+		};
+		$this->assertNotNull($this->writer->order("? ASC")->put("id"));
 	}
 }
