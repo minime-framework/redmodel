@@ -173,6 +173,7 @@ class QueryWriter
 	{
 		if($this->hasFilter)
 		{
+			// maybe use count(*)
 			return count($this->writer->get());
 		}
 		else
@@ -182,18 +183,63 @@ class QueryWriter
 		}
 	}
 
-	//select
-	//from
-	//distinct
-	//maximum
-	//minimum
-	//sum
+	public function group($args)
+	{
+		if(NULL === $args)
+		{
+			throw new \InvalidArgumentException("Put values for ordenation");
+		}
+		$this->writer->addSQL(" GROUP BY $args ");
+		return $this;
+	}
 
-	//joins
-	//group
-	//having
+	public function having($condition)
+	{
+		if(NULL === $condition)
+		{
+			throw new \InvalidArgumentException("Put values of having");
+		}
+		$this->writer->addSQL(" HAVING $condition ");
+		return $this;
+	}
+
+	public function select()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
 	
-	//offset
+	public function distinct()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
 
-	//exists
+	public function maximum()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
+
+	public function minimum()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
+	
+	public function sum()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
+
+	public function joins()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
+	
+	public function offset()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
+
+	public function exists()
+	{
+		throw new \InvalidArgumentException("awaiting implementation..");
+	}
 }
