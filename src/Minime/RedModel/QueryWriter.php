@@ -15,7 +15,7 @@ class QueryWriter
 		if(method_exists($class,"entity"))
 		{
 			$this->class = $class;
-			$this->writer = R::$f->begin()->select("*")->from($class::entity());
+			$this->writer = R::$f;
 		}
 		else
 		{
@@ -28,19 +28,26 @@ class QueryWriter
 	{
 		$class   = $this->class;
 		$results = [];
-		if($items = $this->writer->get())
+		try
 		{
-			foreach($items as $item)
+			foreach($this->writer->get() as $args)
 			{
 				$bean = R::dispense($class::entity());
-				$results[] = new $class(null, $bean->import($item));
+				$results[] = new $class(null, $bean->import($args));
 			}
+			return $results;
 		}
-		else
+		catch(\RedBean_Exception_SQL $e)
 		{
-			throw new \InvalidArgumentException("Error in query execution.");
+			throw new \InvalidArgumentException("Error in query execution: $e");
 		}
-		return $results;
+	}
+
+	public function select($attrs = "*")
+	{
+		$class = $this->class;
+		$this->writer->begin()->select($attrs)->from($class::entity());
+		return $this;
 	}
 
 	public function first($limit = 1)
@@ -54,10 +61,37 @@ class QueryWriter
 		return $this->order(" id DESC ")->first($limit);
 	}
 
-	private function whereWithIn($args)
+	public function where($args)
 	{
-		$this->where(" 1=1 ");
-		$condition = [];
+		if(count($values = func_get_args()) == 1)
+		{
+			$this->writer->where($values[0]);
+		}
+		else 
+		{
+			$condition = array_shift($values);
+			$this->writer->where($condition);
+			foreach ($values  as $value)
+			{
+				$this->put($value);
+			}
+		}
+		$this->hasFilter = true;
+		return $this;
+	}
+
+	public function put($value)
+	{
+		$this->writer->put($value);
+		return $this;
+	}
+
+	public function with($args)
+	{
+		if(!$this->hasFilter)
+		{
+			$this->where(" 1=1 ");
+		}
 		foreach ($args as $key => $values)
 		{
 			if(empty($key))
@@ -74,69 +108,19 @@ class QueryWriter
 			}
 			else
 			{
-				while (each($values)) {
-					$condition[$key][] = "?";
-				}
-				$this->writer->open()->addSQL(join(", ", $condition[$key]))->close();
+				$this->writer->open()->addSQL(R::genSlots($values))->close();
 				foreach ($values as $id)
 				{
 					$this->put($id);
 				}
 			}
 		}
-	}
-
-	private function whereSimple($values)
-	{
-		$condition = array_shift($values);
-		$this->writer->where($condition);
-		foreach ($values  as $value)
-		{
-			$this->put($value);
-		}
-	}
-
-	public function where($args)
-	{
-		if(NULL === $args)
-		{
-			throw new \InvalidArgumentException("Put all values query");
-		}
-		if(is_array($args))
-		{
-			$this->whereWithIn($args);
-		}
-		else
-		{
-			if(count($values = func_get_args()) < 2)
-			{
-				$this->writer->where($values[0]);
-			}
-			else 
-			{
-				$this->whereSimple($values);
-			}
-		}
 		$this->hasFilter = true;
-		return $this;
-	}
-
-	public function put($value)
-	{
-		if(NULL === $value)
-		{
-			throw new \InvalidArgumentException("Put expects values of condition");
-		}
-		$this->writer->put($value);
 		return $this;
 	}
 
 	public function order($args)
 	{
-		if(NULL === $args)
-		{
-			throw new \InvalidArgumentException("Put values for ordenation");
-		}
 		if($order = func_get_args())
 		{
 			$this->writer->addSQL(" ORDER BY " . join(", ", $order));
@@ -150,10 +134,6 @@ class QueryWriter
 
 	public function limit($limit)
 	{
-		if(NULL === $limit)
-		{
-			throw new \InvalidArgumentException("Put value limit");
-		}
 		#
 		# mysql | postgres | sqlite
 		# select col from tbl limit 20;
@@ -166,6 +146,12 @@ class QueryWriter
 		# Microsoft SQL
 		# select top 20 col from tbl;
 		// $this->select(" TOP $limit ");
+		return $this;
+	}
+
+	public function offset($limit)
+	{
+		$this->writer->addSQL(" OFFSET $limit ");
 		return $this;
 	}
 
@@ -185,61 +171,31 @@ class QueryWriter
 
 	public function group($args)
 	{
-		if(NULL === $args)
-		{
-			throw new \InvalidArgumentException("Put values for ordenation");
-		}
 		$this->writer->addSQL(" GROUP BY $args ");
 		return $this;
 	}
-
-	public function having($condition)
+	
+	public function distinct($attr)
 	{
-		if(NULL === $condition)
-		{
-			throw new \InvalidArgumentException("Put values of having");
-		}
-		$this->writer->addSQL(" HAVING $condition ");
+		$this->select(" DISTINCT $attr ");
 		return $this;
 	}
 
-	public function select()
+	public function maximum($attr)
 	{
-		throw new \InvalidArgumentException("awaiting implementation..");
+		$this->select(" MAX($attr) ");
+		return $this;
+	}
+
+	public function minimum($attr)
+	{
+		$this->select(" MIN($attr) ");
+		return $this;
 	}
 	
-	public function distinct()
+	public function sum($attr)
 	{
-		throw new \InvalidArgumentException("awaiting implementation..");
-	}
-
-	public function maximum()
-	{
-		throw new \InvalidArgumentException("awaiting implementation..");
-	}
-
-	public function minimum()
-	{
-		throw new \InvalidArgumentException("awaiting implementation..");
-	}
-	
-	public function sum()
-	{
-		throw new \InvalidArgumentException("awaiting implementation..");
-	}
-
-	public function joins()
-	{
-		throw new \InvalidArgumentException("awaiting implementation..");
-	}
-	
-	public function offset()
-	{
-		throw new \InvalidArgumentException("awaiting implementation..");
-	}
-
-	public function exists()
-	{
-		throw new \InvalidArgumentException("awaiting implementation..");
+		$this->select(" SUM($attr) ");
+		return $this;
 	}
 }
