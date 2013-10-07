@@ -69,7 +69,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @test
 	 */
-	public function first()
+	public function firstAndTwoFirst()
 	{
 		$i = 1;
 		foreach(R::dispense("query_model", 3) as $bean){
@@ -77,23 +77,13 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 			R::store($bean);
 		};
 		$this->assertEquals(1, $this->writer->select()->first()->column1());
-	}
-
-	/**
-	 * @test
-	 */
-	public function twoFirst()
-	{
-		foreach(R::dispense("query_model", 3) as $bean){
-			R::store($bean);
-		};
 		$this->assertCount(2, $this->writer->select()->first(2));
 	}
 
 	/**
 	 * @test
 	 */
-	public function last()
+	public function lastAndTwoLast()
 	{
 		$i = 1;
 		foreach(R::dispense("query_model", 3) as $bean){
@@ -101,29 +91,20 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 			R::store($bean);
 		};
 		$this->assertEquals(3, $this->writer->select()->last()->column1());
-	}
-
-	/**
-	 * @test
-	 */
-	public function twoLast()
-	{
-		foreach(R::dispense("query_model", 3) as $bean){
-			R::store($bean);
-		};
 		$this->assertCount(2, $this->writer->select()->last(2));
 	}
 
 	/**
 	 * @test
 	 */
-	public function whereWithPut()
+	public function withPut()
 	{
 		foreach(R::dispense("query_model", 3) as $bean){
 			$bean->column1 = "x";
 			R::store($bean);
 		};
 		$this->assertCount(3, $this->writer->select()->where("column1 = ?")->put("x")->all());
+		$this->assertCount(1, $this->writer->select("COUNT(?)")->group("?")->put("id", "id")->all());
 	}
 
 	/**
@@ -218,5 +199,19 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
 			R::store($bean);
 		};
 		$this->writer->select()->with(["id" => []]);
+	}
+
+	/**
+	 * @test
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function calculated()
+	{
+		foreach(R::dispense("query_model", 3) as $bean){
+			R::store($bean);
+		};
+		$this->assertEquals(3, $this->writer->select()->max("id")->all());
+		$this->assertEquals(1, $this->writer->select()->min("id")->all());
+		$this->assertEquals(6, $this->writer->select()->sum("id")->all());
 	}
 }

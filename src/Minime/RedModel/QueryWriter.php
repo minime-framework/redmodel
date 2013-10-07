@@ -82,7 +82,9 @@ class QueryWriter
 
 	public function put($value)
 	{
-		$this->writer->put($value);
+		foreach (func_get_args() as $key => $value) {
+			$this->writer->put($value);
+		}
 		return $this;
 	}
 
@@ -181,13 +183,13 @@ class QueryWriter
 		return $this;
 	}
 
-	public function maximum($attr)
+	public function max($attr)
 	{
 		$this->select(" MAX($attr) ");
 		return $this;
 	}
 
-	public function minimum($attr)
+	public function min($attr)
 	{
 		$this->select(" MIN($attr) ");
 		return $this;
