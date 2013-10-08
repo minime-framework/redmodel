@@ -176,28 +176,4 @@ class QueryWriter
 		$this->writer->addSQL(" GROUP BY $args ");
 		return $this;
 	}
-	
-	public function distinct($attr)
-	{
-		$this->select(" DISTINCT $attr ");
-		return $this;
-	}
-
-	public function max($attr)
-	{
-		$this->select(" MAX($attr) ");
-		return $this;
-	}
-
-	public function min($attr)
-	{
-		$this->select(" MIN($attr) ");
-		return $this;
-	}
-	
-	public function sum($attr)
-	{
-		$this->select(" SUM($attr) ");
-		return $this;
-	}
 }
