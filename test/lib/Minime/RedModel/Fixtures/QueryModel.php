@@ -3,13 +3,13 @@
 namespace Minime\RedModel\Fixtures;
 
 class QueryModel extends \Minime\RedModel\Model {
-	/**
-	 * @column
-	 */
-	protected $column1;
+    /**
+     * @column
+     */
+    protected $name;
 
-	/**
-	 * @column
-	 */
-	protected $column2;
+    /**
+     * @column
+     */
+    protected $count;
 }
