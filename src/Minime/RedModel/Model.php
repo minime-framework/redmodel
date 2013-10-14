@@ -17,6 +17,13 @@ class Model
 	 */
 	private $bean;
 
+	/**
+	 * ErrosBad
+	 * 
+	 * @var \Minime\RedModel\ErrorsBag
+	 */
+	private $errors = [];
+
 	public function __construct($id = null, \RedBean_OODBBean $bean = null)
 	{	
 		$database = self::selectDatabase();
@@ -123,7 +130,7 @@ class Model
 		{
 			try
 			{
-				if($this->getPropertyAnnotations($property)->has('column'))
+				if($this->getPropertyAnnotations($property)->has('redmodel.column'))
 				{
 					$columns[] = $property;
 				}
@@ -188,8 +195,34 @@ class Model
 	private function validate()
 	{
 		if(!$this->checkUniqueConstraints()) return false;
+
+		$validator = new ValidationManager;
+		$errors = [];
+		foreach($this->getColumns() as $column)
+		{				
+			$rules = $this->getPropertyAnnotations($column)->useNamespace('redmodel.validate')->export();			
+
+			if(count($rules))
+			{	
+				$validator->setRules($rules);
+				if(FALSE === $validator->isValid($this->$column()))
+				{
+					$errors[$column] = $validator->reportErrors();
+				}
+			}
+		}		
+		if(count($errors))
+		{
+			$this->errors = new ErrorsBag($errors);
+			return false;
+		}		
 		return true;
 	}
+
+	public function reportErrors()
+	{
+		return $this->errors;		
+	} 
 
 	/**
 	 * Save to database.
