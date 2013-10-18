@@ -14,8 +14,8 @@ end
 
 def phpunit testpath=''
 	clear
-  system "phpunit"
-  # system "phpunit #{testpath}"
+  # system "phpunit"
+  system "phpunit #{testpath}"
   # system "phpunit --coverage-html /tmp/coverage/" # generates html coverage report
   # system "phpunit --coverage-text" # shows coverage report at terminal
   # system "phpunit --testdox"
@@ -41,6 +41,6 @@ end
 watch('src/(.*)\.php') do |md|
   clear
   testpath = md[1] + "Test.php"
-  status = phpunit "test/#{testpath}"
+  status = phpunit "test/suite/#{testpath}"
   notify status, testpath
 end
