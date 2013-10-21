@@ -300,9 +300,6 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->writer->select( ' date(created_at) as ordered_date, sum(price) as total_price ' )->group( ' date(created_at) ' )->all());
         $this->assertCount(1, $this->writer->select( ' date(created_at) as ordered_date, sum(price) as total_price ' )->group( ' date(created_at) ' )->having( ' sum(price) = 50 ')->all());
         $this->assertCount(1, $this->writer->select( ' date(created_at) as ordered_date, sum(price) as total_price ' )->group( ' date(created_at) ' )->having( ' sum(price) = ? ', 50 )->all());
-
-        // TODO:
-        // $this->assertCount(1, $this->writer->select( ' date(?) as ordered_date, sum(?) as total_price ' )->group( ' date(?) ' )->having( ' sum(?) = ? ')->put('created_at', 'price', 'created_at', 'price', 50)->all());
     }
 
     /**
@@ -333,27 +330,6 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->writer->all());
         $this->assertEquals( 'select user.* from user inner join address on address.user_id = user.id inner join contact on contact.user_id = user.id', $this->writer->getSQL() );
 
-        #---------------
-
-        $this->writer = (new QueryWriter( ' user ' ))->joins( [' address ' => 1] );
-        $this->assertCount(1, $this->writer->all());
-        $this->assertEquals( 'select user.* from user inner join address on address.user_id = 1', $this->writer->getSQL() );
-
-        $this->writer = (new QueryWriter( ' user ' ))->joins( [' address ' => 1, ' contact ' => 1] );
-        $this->assertCount(1, $this->writer->all());
-        $this->assertEquals( 'select user.* from user inner join address on address.user_id = 1 inner join contact on contact.user_id = 1', $this->writer->getSQL() );
-
-        $this->writer = (new QueryWriter( ' user ' ))->joins( ' address ', [' contact ' => 1] );
-        $this->assertCount(1, $this->writer->all());
-        $this->assertEquals( 'select user.* from user inner join address on address.user_id = user.id inner join contact on contact.user_id = 1', $this->writer->getSQL() );
-
-
-        // TODO:
-        // Post->joins('category', 'comments')
-        # => SELECT posts.* FROM posts
-        # => INNER JOIN categories ON posts.category_id = categories.id
-        # => INNER JOIN comments ON comments.post_id = posts.id
-
 
         $employee     = R::dispense('employee');
         $employee->user = $user;
@@ -369,6 +345,12 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
         $this->writer = (new QueryWriter( ' user ' ))->joins( ' address ', [' employee ' => ' department '] );
         $this->assertCount(1, $this->writer->all());
         $this->assertEquals( 'select user.* from user inner join address on address.user_id = user.id inner join employee on employee.user_id = user.id inner join department on employee.department_id = department.id', $this->writer->getSQL() );
+
+        // TODO:
+        // Post->joins('category', 'comments')
+        # => SELECT posts.* FROM posts
+        # => INNER JOIN categories ON posts.category_id = categories.id
+        # => INNER JOIN comments ON comments.post_id = posts.id
 
         // TODO:
         // $this->writer = (new QueryWriter( ' person ' ))->joins( [ ' user ' => [[' employee ' => ' department '], ' address ']] );
