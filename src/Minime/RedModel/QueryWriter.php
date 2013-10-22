@@ -52,7 +52,7 @@ class QueryWriter
 
     public function connection( $adapter = null )
     {
-        (!isset($adapter)) ? $this->adapter = $adapter : null;
+        (isset($adapter)) ?: $this->adapter = $adapter;
         return $this;
     }
 
@@ -148,7 +148,7 @@ class QueryWriter
         return $this;
     }
 
-############################################# Calculations
+############################################# CalculationsMethods
 
     public function count()
     {
@@ -232,9 +232,9 @@ class QueryWriter
     public function all( $what = '' )
     {
         $this->beginCapture();
-        $this->bodySelectClause();
+        $this->queryAttributes();
         $this->assignTable();
-        $this->joining();
+        $this->joiningQuery();
         $this->conditionsQuery();
         $this->groupingQuery();
         $this->havingQuery();
@@ -252,12 +252,7 @@ class QueryWriter
         $this->sqlHelper->begin();
     }
 
-    private function assignTable()
-    {
-        $this->sqlHelper->from( $this->table );
-    }
-
-    private function bodySelectClause()
+    private function queryAttributes()
     {
         if( count($this->attributes) > 0 )
         {
@@ -275,6 +270,11 @@ class QueryWriter
         {
             $this->sqlHelper->select( $this->table . '.*' );
         }
+    }
+
+    private function assignTable()
+    {
+        $this->sqlHelper->from( $this->table );
     }
 
     private function whererWithArrayValues( $conditions )
@@ -386,7 +386,7 @@ class QueryWriter
         }
     }
 
-    public function joining()
+    public function joiningQuery()
     {
         if($this->join)
         {

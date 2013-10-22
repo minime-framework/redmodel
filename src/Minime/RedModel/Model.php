@@ -4,6 +4,7 @@ namespace Minime\RedModel;
 
 use Minime\Annotations\Facade as Meta;
 use Minime\Annotations\Traits\Reader as AnnotationsReader;
+use Minime\RedModel\QueryWriter as Writer;
 use R;
 
 class Model
@@ -231,32 +232,13 @@ class Model
 	}
 
 	/**
-	 * Load all rows from table.
+	 * Start query writer for query.
 	 * 
-	 * @return array of Minime\RedModel\Model
+	 * @return QueryWriter
 	 */
-	public static function all()
+	public static function writer()
 	{
-		self::selectDatabase();
-		$class = get_called_class();
-		$table = self::entity();
-		$beans = [];
-		foreach(R::findAll($table) as $bean)
-		{
-			$beans[] = new $class(null, $bean);
-		}
-		return $beans;
-	}
-	
-	/**
-	 * Count rows from table.
-	 * 
-	 * @return integer
-	 */
-	public static function count()
-	{
-		self::selectDatabase();
-		return R::count( self::entity() );
+		return new Writer(self::entity());
 	}
 
 	/**

@@ -40,8 +40,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		{
 			R::store( R::dispense( GenericModel::entity() ) );
 		}
-		$this->assertEquals(3, GenericModel::count());
-		$this->assertEquals(3, (new GenericModel)->count());
+		$this->assertEquals(3, GenericModel::writer()->count());
 	}
 
 	/**
@@ -56,7 +55,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		{
 			$ids[] = (new GenericModel)->save();
 		}
-		$this->assertEquals(3, GenericModel::count());
+		$this->assertEquals(3, GenericModel::writer()->count());
 		$this->assertSame(range(1, 3), $ids);
 	}
 
@@ -93,11 +92,11 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		}
 		$this->assertSame(TRUE, (new GenericModel(3))->delete());
 		$this->assertSame(FALSE, (new GenericModel(3))->delete());
-		$this->assertEquals(2, GenericModel::count());
+		$this->assertEquals(2, GenericModel::writer()->count());
 
 		$this->assertSame(TRUE, (new GenericModel(2))->delete());
 		$this->assertSame(FALSE, (new GenericModel(2))->delete());
-		$this->assertEquals(1, GenericModel::count());
+		$this->assertEquals(1, GenericModel::writer()->count());
 
 		$this->assertSame(FALSE, (new GenericModel())->delete());
 	}
@@ -160,7 +159,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		{
 			(new GenericModel())->save();
 		}
-		$this->assertEquals(3, count(GenericModel::all()));
+		$this->assertEquals(3, count(GenericModel::writer()->all()));
 	}
 
 	/**
@@ -175,7 +174,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			(new GenericModel())->save();
 		}
 		GenericModel::truncate();
-		$this->assertEquals(0, count(GenericModel::all()));
+		$this->assertEquals(0, count(GenericModel::writer()->all()));
 	}
 
 	/**
@@ -199,7 +198,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			$foo->name("marcio");
 			$foo->save();
 		}
-		$this->assertEquals(1, count(GenericModel::all()));
+		$this->assertEquals(1, count(GenericModel::writer()->all()));
 	}
 
 	/**
