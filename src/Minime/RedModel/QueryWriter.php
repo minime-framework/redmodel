@@ -6,8 +6,13 @@ use R;
 
 class QueryWriter
 {
+    private $table;
     private $adapter;
     private $sqlHelper;
+
+    private $attributes   = [];
+    private $conditions   = [];
+    private $ordination   = [];
 
     private $distinct     = false;
     private $where        = false;
@@ -27,12 +32,6 @@ class QueryWriter
 
     private $having       = [];
     private $have         = false;
-
-    private $attributes   = [];
-    private $conditions   = [];
-    private $ordination   = [];
-
-    private $table;
 
     public function __construct( $table )
     {
@@ -62,7 +61,191 @@ class QueryWriter
         return strtolower( trim($this->adapter->getSQL()) );
     }
 
+    public function put()
+    {
+        $args = func_get_args();
+        (is_array($args[0])) ? $values = $args[0] : $values = $args;
+
+        foreach ($values as $value) {
+            $this->sqlHelper->put($value);
+        }
+        return $this;
+    }
+
+############################################# QueryMethods
+
+    public function select()
+    {
+        $this->attributes = func_get_args();
+        return $this;
+    }
+
+    public function distinct( $value = true )
+    {
+        $this->distinct = $value;
+        return $this;
+    }
+
+    public function not()
+    {
+        $this->deny = true;
+        return $this;
+    }
+
+    public function where( $value = true )
+    {
+        $this->conditions = func_get_args();
+        $this->where      = $value;
+
+        return $this;
+    }
+
+    public function joins( $value = true )
+    {
+        $this->joining = func_get_args();
+        $this->join = $value;
+
+        return $this;
+    }
+
+    public function group( $value = true )
+    {
+        $this->grouping = func_get_args();
+        $this->group    = $value;
+
+        return $this;
+    }
+
+    public function having( $value = true )
+    {
+        $this->having = func_get_args();
+        $this->have   = $value;
+
+        return $this;
+    }
+
+    public function order( $value = true )
+    {
+        $this->ordination = func_get_args();
+        $this->order      = $value;
+
+        return $this;
+    }
+
+    public function limit( $limit = 1 )
+    {
+        $this->limitValue = $limit;
+        $this->limit      = true;
+
+        return $this;
+    }
+
+    public function offset( $limit = 1 )
+    {
+        $this->offsetValue = $limit;
+        $this->offset      = true;
+
+        return $this;
+    }
+
+############################################# Calculations
+
+    public function count()
+    {
+        return $this->select( ' COUNT(*) AS count_all ' )->first()['count_all'];
+    }
+
+    public function minimum( $value = "id" )
+    {
+        return $this->select( " MIN($value) AS min_val " )->first()['min_val'];
+    }
+
+    public function maximum( $value = "id" )
+    {
+        return $this->select( " MAX($value) AS max_val " )->first()['max_val'];
+    }
+
+    public function sum( $value = "id" )
+    {
+        return $this->select( " SUM($value) AS sum_val " )->first()['sum_val'];
+    }
+
+    public function average( $value = "id" )
+    {
+        return $this->select( " AVG($value) AS avg_val " )->first()['avg_val'];
+    }
+
 ############################################# FinderMethods
+
+    public function first( $limit = 1 )
+    {
+        return $this->limit( $limit )->all()[0];
+    }
+
+    public function last( $limit = 1 )
+    {
+        return $this->order( ' id DESC ' )->first( $limit );
+    }
+
+    public function exists( $hash )
+    {
+        return (count($this->findBy( $hash )) > 0);
+    }
+
+    public function find()
+    {
+        $value_ids = func_get_args();
+        (is_array($value_ids[0])) ? $ids = $value_ids[0] : $ids = $value_ids;
+
+        return $this->where(["id" => $ids])->all();
+    }
+
+    public function findBy()
+    {
+        $values = func_get_args();
+        if(is_array($values[0]))
+        {
+            return $this->where($values[0])->all();
+        }
+        else
+        {
+            return $this->where(
+                ($this->deny) ? "$values[0] <> ?" : "$values[0] = ?", $values[1] )->all();
+        }
+    }
+
+    public function findBySQL( $sql, $toBean = false )
+    {
+        return ($toBean) ? R::convertToBeans( $this->adapter->get( $sql ) ) : $this->adapter->get( $sql );
+    }
+
+    public function execute( $sql )
+    {
+        return $this->adapter->exec( $sql );
+    }
+
+    /**
+     * @param string $retrieval One of these 'cell', 'row', 'col' or 'all'.
+     *
+     * @return mixed $result
+     */
+    public function all( $what = '' )
+    {
+        $this->beginCapture();
+        $this->bodySelectClause();
+        $this->assignTable();
+        $this->joining();
+        $this->conditionsQuery();
+        $this->groupingQuery();
+        $this->havingQuery();
+        $this->ordenationQuery();
+        $this->limitationQuery();
+        $this->offsetQuery();
+
+        return $this->sqlHelper->get( $what );
+    }
+
+#############################################
 
     private function beginCapture()
     {
@@ -236,187 +419,5 @@ class QueryWriter
             $this->sqlHelper->addSQL( join(' ',$lsql) );
             $this->join = false;
         }
-    }
-
-    /**
-     * @param string $retrieval One of these 'cell', 'row', 'col' or 'all'.
-     *
-     * @return mixed $result
-     */
-    public function all( $what = '' )
-    {
-        $this->beginCapture();
-        $this->bodySelectClause();
-        $this->assignTable();
-        $this->joining();
-        $this->conditionsQuery();
-        $this->groupingQuery();
-        $this->havingQuery();
-        $this->ordenationQuery();
-        $this->limitationQuery();
-        $this->offsetQuery();
-
-        return $this->sqlHelper->get( $what );
-    }
-
-    public function first( $limit = 1 )
-    {
-        return $this->limit( $limit )->all()[0];
-    }
-
-    public function last( $limit = 1 )
-    {
-        return $this->order( ' id DESC ' )->first( $limit );
-    }
-
-    public function exists( $hash )
-    {
-        return (count($this->findBy( $hash )) > 0);
-    }
-
-    public function find()
-    {
-        $value_ids = func_get_args();
-        (is_array($value_ids[0])) ? $ids = $value_ids[0] : $ids = $value_ids;
-
-        return $this->where(["id" => $ids])->all();
-    }
-
-    public function findBy()
-    {
-        $values = func_get_args();
-        if(is_array($values[0]))
-        {
-            return $this->where($values[0])->all();
-        }
-        else
-        {
-            return $this->where(
-                ($this->deny) ? "$values[0] <> ?" : "$values[0] = ?", $values[1] )->all();
-        }
-    }
-
-    public function findBySQL( $sql, $toBean = false )
-    {
-        return ($toBean) ? R::convertToBeans( $this->adapter->get( $sql ) ) : $this->adapter->get( $sql );
-    }
-
-    public function execute( $sql )
-    {
-        return $this->adapter->exec( $sql );
-    }
-
-############################################# QueryMethods
-
-    public function put()
-    {
-        $args = func_get_args();
-        (is_array($args[0])) ? $values = $args[0] : $values = $args;
-
-        foreach ($values as $value) {
-            $this->sqlHelper->put($value);
-        }
-        return $this;
-    }
-
-    public function select()
-    {
-        $this->attributes = func_get_args();
-        return $this;
-    }
-
-    public function distinct( $value = true )
-    {
-        $this->distinct = $value;
-        return $this;
-    }
-
-    public function not()
-    {
-        $this->deny = true;
-        return $this;
-    }
-
-    public function where( $value = true )
-    {
-        $this->conditions = func_get_args();
-        $this->where      = $value;
-
-        return $this;
-    }
-
-    public function joins( $value = true )
-    {
-        $this->joining = func_get_args();
-        $this->join = $value;
-
-        return $this;
-    }
-
-    public function group( $value = true )
-    {
-        $this->grouping = func_get_args();
-        $this->group    = $value;
-
-        return $this;
-    }
-
-    public function having( $value = true )
-    {
-        $this->having = func_get_args();
-        $this->have   = $value;
-
-        return $this;
-    }
-
-    public function order( $value = true )
-    {
-        $this->ordination = func_get_args();
-        $this->order      = $value;
-
-        return $this;
-    }
-
-    public function limit( $limit = 1 )
-    {
-        $this->limitValue = $limit;
-        $this->limit      = true;
-
-        return $this;
-    }
-
-    public function offset( $limit = 1 )
-    {
-        $this->offsetValue = $limit;
-        $this->offset      = true;
-
-        return $this;
-    }
-
-############################################# Calculations
-
-    public function count()
-    {
-        return $this->select( ' COUNT(*) AS count_all ' )->first()['count_all'];
-    }
-
-    public function minimum( $value = "id" )
-    {
-        return $this->select( " MIN($value) AS min_val " )->first()['min_val'];
-    }
-
-    public function maximum( $value = "id" )
-    {
-        return $this->select( " MAX($value) AS max_val " )->first()['max_val'];
-    }
-
-    public function sum( $value = "id" )
-    {
-        return $this->select( " SUM($value) AS sum_val " )->first()['sum_val'];
-    }
-
-    public function average( $value = "id" )
-    {
-        return $this->select( " AVG($value) AS avg_val " )->first()['avg_val'];
     }
 }
