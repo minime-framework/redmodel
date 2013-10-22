@@ -45,13 +45,13 @@ class MultipleDatabasesTest extends \PHPUnit_Framework_TestCase
 			$ids_db_default[] = (new DatabaseDefault)->save();
 		}
 
-		$this->assertEquals(3, DatabaseA::count());
+		$this->assertEquals(3, DatabaseA::writer()->count());
 		$this->assertSame(range(1, 3), $ids_db_a);
 
-		$this->assertEquals(3, DatabaseB::count());
+		$this->assertEquals(3, DatabaseB::writer()->count());
 		$this->assertSame(range(1, 3), $ids_db_b);
 
-		$this->assertEquals(3, DatabaseDefault::count());
+		$this->assertEquals(3, DatabaseDefault::writer()->count());
 		$this->assertSame(range(1, 3), $ids_db_default);
 	}
 
