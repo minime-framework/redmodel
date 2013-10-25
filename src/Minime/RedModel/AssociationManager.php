@@ -57,7 +57,7 @@ class AssociationManager
 
 	protected function getOwnManyAssociationsMetadata()
 	{
-		return $this->model->getClassAnnotations()->grepNamespace('redmodel')->grep('own-many');
+		return $this->model->getClassAnnotations()->grepNamespace('redmodel')->get('own-many');
 	}
 
 	public function getOneToMany($related_class)
@@ -101,11 +101,13 @@ class AssociationManager
 		{
 			$DeclaredClass = $this->solveRelatedClass($declared_class);
 
-			if(!$RelatedClass->isRuntimeEquivalentTo($DeclaredClass))
+			if($RelatedClass->isRuntimeEquivalentTo($DeclaredClass))
 			{
-				throw new InvalidAssociationException();
+				return true;
 			}
 		}
+
+		throw new InvalidAssociationException();
 	}
 
 	private function solveRelatedClass($related_class_name)
