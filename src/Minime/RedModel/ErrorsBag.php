@@ -10,12 +10,8 @@ class ErrorsBag implements \IteratorAggregate
 	 */
 	private $errors = [];
 
-	public function __construct($errors)
+	public function __construct(array $errors)
 	{
-		if(!is_array($errors))
-		{
-			throw new \InvalidArgumentException("ErrosBag expects an array");
-		}
 		$this->errors = $errors;
 	}
 	
@@ -43,7 +39,7 @@ class ErrorsBag implements \IteratorAggregate
 			}
 			return false;
 		}
-		throw new \InvalidArgumentException('Parameter must be a string');
+		throw new \InvalidArgumentException('Key must be a string');
 	}
 	
 	/**

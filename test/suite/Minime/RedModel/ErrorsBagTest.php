@@ -30,7 +30,7 @@ class ErrorsBagTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @test
-	 * @expectedException \InvalidArgumentException
+	 * @expectedException \PHPUnit_Framework_Error
 	 */
 	public function constructAcceptsOnlyArrays()
 	{
