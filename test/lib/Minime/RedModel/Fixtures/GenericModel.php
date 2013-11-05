@@ -11,15 +11,9 @@ class GenericModel extends \Minime\RedModel\Model
 {
 
 	/**
-	 * @column @unique @null
+	 * @redmodel.column @unique @null
 	 * @type
-	 * @default <value>
-	 * @validation.regex /regexp/
-	 * @validation.max-length <integer>
-	 * @validation.min-length <integer>
-	 * @validation.max <integer>
-	 * @validation.min <integer>
-	 * @validation.
+	 * @default <value>	 
 	 */
 		protected $name;
 

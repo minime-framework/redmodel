@@ -16,7 +16,8 @@
         "php": ">=5.4.0",
         "gabordemooij/redbean": "dev-master",
         "eloquent/cosmos": "2.3.*",
-        "minime/annotations": "~1.2"
+        "minime/annotations": "~1.2",
+        "respect/validation": "~0.4"
     },
     "require-dev": {
         "psy/psysh": "0.1.0.*@dev"
