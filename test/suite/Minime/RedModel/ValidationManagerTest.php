@@ -60,7 +60,7 @@ class ValidationManagerTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @test
-	 * @expectedException \InvalidArgumentException
+	 * @expectedException \PHPUnit_Framework_Error
 	 * @dataProvider provedorRules
 	 */
 	public function setRules($rules)

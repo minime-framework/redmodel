@@ -22,16 +22,9 @@ class ValidationManager
 	 * Set rules
 	 * @param array
 	 */
-	public function setRules($rules)
+	public function setRules(array $rules)
 	{
-		if(is_array($rules) && count($rules))
-		{
-			$this->rules = $rules;
-		}
-		else
-		{
-			throw new \InvalidArgumentException("Rules should be an array!");
-		}
+		$this->rules = $rules;
 	}
 
 	/**
