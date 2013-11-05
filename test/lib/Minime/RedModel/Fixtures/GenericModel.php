@@ -3,9 +3,9 @@
 namespace Minime\RedModel\Fixtures;
 
 /**
- * @entity
- * @table foo
- * @timestamps
+ * @redmodel
+ * @redmodel.table foo
+ * @redmodel.timestamps
  */
 class GenericModel extends \Minime\RedModel\Model
 {

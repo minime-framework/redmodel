@@ -3,8 +3,8 @@
 namespace Minime\RedModel\Fixtures;
 
 /**
- * @entity
- * @table foo
+ * @redmodel
+ * @redmodel.table foo
  */
 class SoftDeleteModel extends \Minime\RedModel\Model
 {

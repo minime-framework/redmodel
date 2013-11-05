@@ -2,9 +2,9 @@
 
 namespace Minime\RedModel;
 
-use \Minime\RedModel\Fixtures\DatabaseA;
-use \Minime\RedModel\Fixtures\DatabaseB;
-use \Minime\RedModel\Fixtures\DatabaseDefault;
+use \Minime\RedModel\Fixtures\MultipleDatabases\DatabaseA;
+use \Minime\RedModel\Fixtures\MultipleDatabases\DatabaseB;
+use \Minime\RedModel\Fixtures\MultipleDatabases\DatabaseDefault;
 use \R;
 
 class MultipleDatabasesTest extends \PHPUnit_Framework_TestCase

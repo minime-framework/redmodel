@@ -3,7 +3,7 @@
 namespace Minime\RedModel\Fixtures;
 
 /**
- * @entity
+ * @redmodel
  */
 class TableFromModelClassName extends \Minime\RedModel\Model
 {

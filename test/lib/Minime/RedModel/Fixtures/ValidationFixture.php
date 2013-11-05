@@ -2,7 +2,7 @@
 namespace Minime\RedModel\Fixtures;
 
 /**
- * @redmodel 
+ * @redmodel
  */
 class ValidationFixture extends \Minime\RedModel\Model
 {	

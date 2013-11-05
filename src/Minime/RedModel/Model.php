@@ -7,7 +7,7 @@ use Minime\Annotations\Traits\Reader as AnnotationsReader;
 use Minime\RedModel\QueryWriter as Writer;
 use R;
 
-class Model
+abstract class Model
 {
 	use AnnotationsReader;
 
@@ -234,7 +234,7 @@ class Model
 	{
 		if($this->validate())
 		{
-			$annotations = $this->getClassAnnotations($this);
+			$annotations = $this->getClassAnnotations($this)->useNamespace('redmodel');
 			if($annotations->has('timestamps'))
 			{
 				$this->updateTimestamps();
@@ -287,7 +287,7 @@ class Model
 
 	public static function entity()
 	{
-		$annotations = Meta::getClassAnnotations(get_called_class());
+		$annotations = Meta::getClassAnnotations(get_called_class())->useNamespace('redmodel');
 
 		if($annotations->has('table'))
 		{
@@ -322,7 +322,7 @@ class Model
 	public static function selectDatabase()
 	{
 		$db_name = 'default';
-		$annotations = Meta::getClassAnnotations(get_called_class());
+		$annotations = Meta::getClassAnnotations(get_called_class())->useNamespace('redmodel');
 		if($annotations->has('db'))
 		{
 			$db_name = $annotations->get('db');

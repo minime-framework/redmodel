@@ -72,8 +72,6 @@ class QueryWriter
         return $this;
     }
 
-############################################# QueryMethods
-
     public function select()
     {
         $this->attributes = func_get_args();
@@ -175,8 +173,6 @@ class QueryWriter
         return $this->select( " AVG($value) AS avg_val " )->first()['avg_val'];
     }
 
-############################################# FinderMethods
-
     public function first( $limit = 1 )
     {
         return $this->limit( $limit )->all()[0];
@@ -244,8 +240,6 @@ class QueryWriter
 
         return $this->sqlHelper->get( $what );
     }
-
-#############################################
 
     private function beginCapture()
     {
