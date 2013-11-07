@@ -40,7 +40,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		{
 			R::store( R::dispense( GenericModel::entity() ) );
 		}
-		$this->assertEquals(3, GenericModel::writer()->count());
+		$this->assertEquals(3, R::count(GenericModel::entity()));
 	}
 
 	/**
@@ -55,7 +55,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		{
 			$ids[] = (new GenericModel)->save();
 		}
-		$this->assertEquals(3, GenericModel::writer()->count());
+		$this->assertEquals(3, R::count(GenericModel::entity()));
 		$this->assertSame(range(1, 3), $ids);
 	}
 
@@ -92,11 +92,11 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 		}
 		$this->assertSame(TRUE, (new GenericModel(3))->delete());
 		$this->assertSame(FALSE, (new GenericModel(3))->delete());
-		$this->assertEquals(2, GenericModel::writer()->count());
+		$this->assertEquals(2, R::count(GenericModel::entity()));
 
 		$this->assertSame(TRUE, (new GenericModel(2))->delete());
 		$this->assertSame(FALSE, (new GenericModel(2))->delete());
-		$this->assertEquals(1, GenericModel::writer()->count());
+		$this->assertEquals(1, R::count(GenericModel::entity()));
 
 		$this->assertSame(FALSE, (new GenericModel())->delete());
 	}
@@ -150,20 +150,6 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @test
-	 * @depends counting
-	 */
-	public function all()
-	{
-		$i = 3;
-		while($i--)
-		{
-			(new GenericModel())->save();
-		}
-		$this->assertEquals(3, count(GenericModel::writer()->all()));
-	}
-
-	/**
-	 * @test
 	 * @depends saving
 	 */
 	public function wipe()
@@ -174,7 +160,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			(new GenericModel())->save();
 		}
 		GenericModel::truncate();
-		$this->assertEquals(0, count(GenericModel::writer()->all()));
+		$this->assertEquals(0, R::count(GenericModel::entity()));
 	}
 
 	/**
@@ -198,7 +184,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 			$foo->name("marcio");
 			$foo->save();
 		}
-		$this->assertEquals(1, count(GenericModel::writer()->all()));
+		$this->assertEquals(1, R::count(GenericModel::entity()));
 	}
 
 	/**
