@@ -278,7 +278,7 @@ abstract class Model implements \JsonSerializable
      */
 	public function associations()
 	{
-		return $manager = new AssociationManager($this);
+		return new AssociationManager($this);
 	}
 
 	/**
