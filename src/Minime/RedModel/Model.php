@@ -205,17 +205,6 @@ abstract class Model implements \JsonSerializable
     }
 
     /**
-     * Remove all entities from database! Use with caution.
-     *
-     * @return void
-     */
-    public static function reset()
-    {
-        self::selectDatabase();
-        R::nuke();
-    }
-
-    /**
      * Switch to annotated dabasase declared in model class
      * trhoug "@database" annotation: `@database test`
      *
