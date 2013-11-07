@@ -274,16 +274,6 @@ abstract class Model
 		return $this->bean;
 	}
 
-	/**
-	 * Alias for Model::bean
-	 * @return \RedBean_OODBBean
-	 * @deprecated
-	 */
-	public function unboxBean()
-	{
-		return $this->bean;
-	}
-
     /**
      * Exposes association manager for current model
      * 

@@ -33,7 +33,7 @@ class AssociationManager
 			$related_class = '\\'.get_class($model);
 			$this->validateAssociationOrFail($relations, $related_class);
 			$own = 'own' . ClassName::fromString($related_class)->shortName();
-			$this->model->unboxBean()->{$own}[] = $model->unboxBean();
+			$this->model->bean()->{$own}[] = $model->bean();
 		}
 		return $this->model;
 	}
@@ -52,7 +52,7 @@ class AssociationManager
 			$related_class = '\\'.get_class($model);
 			$this->validateAssociationOrFail($relations, $related_class);
 			$own = 'own' . ClassName::fromString($related_class)->shortName();
-			unset($this->model->unboxBean()->{$own}[$model->id()]);
+			unset($this->model->bean()->{$own}[$model->id()]);
 		}
 		return $this->model;
 	}
@@ -70,7 +70,7 @@ class AssociationManager
 		
 		$related = $RelatedClass->string();
 		$results = [];
-		foreach($this->model->unboxBean()->$own as $related_bean)
+		foreach($this->model->bean()->$own as $related_bean)
 		{
 			$results[] = new $related(null, $related_bean);
 		}
