@@ -132,12 +132,11 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @test
 	 */
-	public function exportJSON()
+	public function modelIsJsonSerializable()
 	{
 		$foo = new GenericModel();
 		$foo->name('bar');
-		$foo->save();
-		$this->assertNotEquals(NULL, json_decode($foo->exportJSON()));
+		$this->assertEquals(json_encode(['id' => 0,'name'=>'bar']), json_encode($foo));
 	}
 
 	/**

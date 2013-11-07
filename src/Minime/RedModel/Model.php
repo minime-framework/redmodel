@@ -8,7 +8,7 @@ use Minime\RedModel\QueryWriter as Writer;
 use Minime\RedModel\Behaviors;
 use R;
 
-abstract class Model
+abstract class Model implements \JsonSerializable
 {
 	use AnnotationsReader;
 
@@ -85,16 +85,6 @@ abstract class Model
 		return $this->bean->$property;
 	}
 
-	/**
-	 * Export all bean properties to associative array.
-	 * 
-	 * @return array Associative array: `["property" => "values"]`
-	 */
-	public function export()
-	{
-		return $this->bean->export();
-	}
-
 	private function hasColumn($column)
 	{
 		try
@@ -146,15 +136,22 @@ abstract class Model
 		return $columns;
 	}
 
-	/**
-	 * Export bean properties to JSON.
-	 * 
-	 * @return string JSON
-	 */
-	public function exportJSON()
-	{
-		return json_encode($this->export());
-	}
+    /**
+     * Export all bean properties to associative array.
+     * 
+     * @return array Associative array: `["property" => "values"]`
+     */
+    public function export()
+    {
+        return $this->bean->export();
+    }
+
+    /**
+     * JsonSerializable
+     */
+    public function jsonSerialize() {
+        return $this->bean->export();
+    }
 
 	public function getErrors()
 	{
