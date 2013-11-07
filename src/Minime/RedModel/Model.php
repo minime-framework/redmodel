@@ -5,6 +5,7 @@ namespace Minime\RedModel;
 use Minime\Annotations\Facade as Meta;
 use Minime\Annotations\Traits\Reader as AnnotationsReader;
 use Minime\RedModel\QueryWriter as Writer;
+use Minime\RedModel\Behaviors;
 use R;
 
 abstract class Model
@@ -155,47 +156,9 @@ abstract class Model
 		return json_encode($this->export());
 	}
 
-	/**
-	 * Unbox bean
-	 * @return \RedBean_OODBBean
-	 */
-	public function unboxBean()
-	{
-		return $this->bean;
-	}
-
-	/**
-	 * @todo Add database agnostic logic to check unique constrainsts of values
-	 */
-	private function checkUniqueConstraints()
-	{
-		return true;
-		// if($this->class_meta->has('unique-constrainst'))
-		// {
-		// 	$conditions = [];
-		// 	$values = [];
-		// 	$constraints = $this->class_meta->get('unique-constrainst');
-		// 	foreach ($constraints as $constraint) {
-		// 		foreach ($constraint as $field) {
-		// 			if($this->$field)
-		// 			{					
-		// 				$values[] = $this->$field;
-		// 				$conditions[] = " {$field} = ? ";
-		// 			}
-		// 		}
-		// 	}
-		// 	$beans = R::findOne(self::entity(), implode(" AND ", $conditions), $values);
-		// 	if(count($beans))
-		// 	{
-		// 		return false;
-		// 	}
-		// 	return true;
-		// }
-	}
-
 	private function validate()
 	{
-		if(!$this->checkUniqueConstraints()) return false;
+		if(!$this->behaviors()->checkUniqueConstraints()) return false;
 
 		$validator = new ValidationManager;
 		$errors = [];
@@ -234,11 +197,7 @@ abstract class Model
 	{
 		if($this->validate())
 		{
-			$annotations = $this->getClassAnnotations($this)->useNamespace('redmodel');
-			if($annotations->has('timestamps'))
-			{
-				$this->updateTimestamps();
-			}
+			$this->behaviors()->updateTimestamps();
 			return R::store($this->bean);
 		}
 		return false;
@@ -322,35 +281,6 @@ abstract class Model
 	}
 
 	/**
-	 * Update the "created_at" and "update_at" fields with their respective timestamps.
-	 *
-	 * @return void
-	 */
-	protected function updateTimestamps()
-	{
-		$time = $this->freshTimestamp();
-
-		if($this->bean->getMeta('tainted'))
-		{
-			if(!$this->bean->id)
-			{
-				$this->bean->created_at = $time;		
-			}
-			$this->bean->updated_at = $time;
-		}
-	}
-
-	/**
-	 * Get a fresh timestamp for the model.
-	 *
-	 * @return \DateTime
-	 */
-	public function freshTimestamp()
-	{
-		return new \DateTime;
-	}
-
-	/**
      * Converts a word into the format for a RedModel table name. Converts 'ModelName' to 'model_name'.
      *
      * @param string $word The word to tableize.
@@ -361,8 +291,27 @@ abstract class Model
         return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $word));
     }
 
+	/**
+	 * Exposes bean
+	 * @return \RedBean_OODBBean
+	 */
+	public function bean()
+	{
+		return $this->bean;
+	}
+
+	/**
+	 * Alias for Model::bean
+	 * @return \RedBean_OODBBean
+	 * @deprecated
+	 */
+	public function unboxBean()
+	{
+		return $this->bean;
+	}
+
     /**
-     * Returns association manager for current model
+     * Exposes association manager for current model
      * 
      * @return Minime\RedModel\AssociationManager
      */
@@ -376,8 +325,17 @@ abstract class Model
 	 * 
 	 * @return Minime\RedModel\QueryWriter
 	 */
-	public static function Writer()
+	public static function writer()
 	{
 		return new Writer(self::entity());
+	}
+
+	/**
+	 * Internal model behaviors
+	 * @return Minime\Redmodel\Behaviors
+	 */
+	protected function behaviors()
+	{
+		return new Behaviors($this);
 	}
 }
