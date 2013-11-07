@@ -19,9 +19,12 @@ class MultipleDatabasesTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        DatabaseA::reset();
-        DatabaseB::reset();
-        DatabaseDefault::reset();
+        R::selectDatabase('database_a');
+        R::nuke('database_a');
+        R::selectDatabase('database_b');
+        R::nuke('database_b');
+        R::selectDatabase('default');
+        R::nuke('default');
     }
 
     /**
