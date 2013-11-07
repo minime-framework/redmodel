@@ -33,26 +33,25 @@ class QueryWriter
     private $having       = [];
     private $have         = false;
 
-    public function __construct( $table )
+    public function __construct($table)
     {
-        if( !isset($table) )
-        {
+        if ( !isset($table) ) {
             throw new \InvalidArgumentException( 'Undefined table name..' );
-        }
-        else
-        {
+        } else {
             $this->table = trim($table);
         }
         $toolbox         = R::$toolbox;
         $this->adapter   = $toolbox->getDatabaseAdapter();
 
         $this->sqlHelper = R::$f;
+
         return $this;
     }
 
-    public function connection( $adapter = null )
+    public function connection($adapter = null)
     {
         (isset($adapter)) ?: $this->adapter = $adapter;
+
         return $this;
     }
 
@@ -69,28 +68,32 @@ class QueryWriter
         foreach ($values as $value) {
             $this->sqlHelper->put($value);
         }
+
         return $this;
     }
 
     public function select()
     {
         $this->attributes = func_get_args();
+
         return $this;
     }
 
-    public function distinct( $value = true )
+    public function distinct($value = true)
     {
         $this->distinct = $value;
+
         return $this;
     }
 
     public function not()
     {
         $this->deny = true;
+
         return $this;
     }
 
-    public function where( $value = true )
+    public function where($value = true)
     {
         $this->conditions = func_get_args();
         $this->where      = $value;
@@ -98,7 +101,7 @@ class QueryWriter
         return $this;
     }
 
-    public function joins( $value = true )
+    public function joins($value = true)
     {
         $this->joining = func_get_args();
         $this->join = $value;
@@ -106,7 +109,7 @@ class QueryWriter
         return $this;
     }
 
-    public function group( $value = true )
+    public function group($value = true)
     {
         $this->grouping = func_get_args();
         $this->group    = $value;
@@ -114,7 +117,7 @@ class QueryWriter
         return $this;
     }
 
-    public function having( $value = true )
+    public function having($value = true)
     {
         $this->having = func_get_args();
         $this->have   = $value;
@@ -122,7 +125,7 @@ class QueryWriter
         return $this;
     }
 
-    public function order( $value = true )
+    public function order($value = true)
     {
         $this->ordination = func_get_args();
         $this->order      = $value;
@@ -130,7 +133,7 @@ class QueryWriter
         return $this;
     }
 
-    public function limit( $limit = 1 )
+    public function limit($limit = 1)
     {
         $this->limitValue = $limit;
         $this->limit      = true;
@@ -138,7 +141,7 @@ class QueryWriter
         return $this;
     }
 
-    public function offset( $limit = 1 )
+    public function offset($limit = 1)
     {
         $this->offsetValue = $limit;
         $this->offset      = true;
@@ -153,37 +156,37 @@ class QueryWriter
         return $this->select( ' COUNT(*) AS count_all ' )->first()['count_all'];
     }
 
-    public function minimum( $value = "id" )
+    public function minimum($value = "id")
     {
         return $this->select( " MIN($value) AS min_val " )->first()['min_val'];
     }
 
-    public function maximum( $value = "id" )
+    public function maximum($value = "id")
     {
         return $this->select( " MAX($value) AS max_val " )->first()['max_val'];
     }
 
-    public function sum( $value = "id" )
+    public function sum($value = "id")
     {
         return $this->select( " SUM($value) AS sum_val " )->first()['sum_val'];
     }
 
-    public function average( $value = "id" )
+    public function average($value = "id")
     {
         return $this->select( " AVG($value) AS avg_val " )->first()['avg_val'];
     }
 
-    public function first( $limit = 1 )
+    public function first($limit = 1)
     {
         return $this->limit( $limit )->all()[0];
     }
 
-    public function last( $limit = 1 )
+    public function last($limit = 1)
     {
         return $this->order( ' id DESC ' )->first( $limit );
     }
 
-    public function exists( $hash )
+    public function exists($hash)
     {
         return (count($this->findBy( $hash )) > 0);
     }
@@ -199,23 +202,20 @@ class QueryWriter
     public function findBy()
     {
         $values = func_get_args();
-        if(is_array($values[0]))
-        {
+        if (is_array($values[0])) {
             return $this->where($values[0])->all();
-        }
-        else
-        {
+        } else {
             return $this->where(
                 ($this->deny) ? "$values[0] <> ?" : "$values[0] = ?", $values[1] )->all();
         }
     }
 
-    public function findBySQL( $sql, $toBean = false )
+    public function findBySQL($sql, $toBean = false)
     {
         return ($toBean) ? R::convertToBeans( $this->adapter->get( $sql ) ) : $this->adapter->get( $sql );
     }
 
-    public function execute( $sql )
+    public function execute($sql)
     {
         return $this->adapter->exec( $sql );
     }
@@ -225,7 +225,7 @@ class QueryWriter
      *
      * @return mixed $result
      */
-    public function all( $what = '' )
+    public function all($what = '')
     {
         $this->beginCapture();
         $this->queryAttributes();
@@ -248,20 +248,14 @@ class QueryWriter
 
     private function queryAttributes()
     {
-        if( count($this->attributes) > 0 )
-        {
-            if($this->distinct)
-            {
+        if ( count($this->attributes) > 0 ) {
+            if ($this->distinct) {
                 $this->sqlHelper->select( ' DISTINCT ' . join(',', $this->attributes) );
                 $this->distinct = false;
-            }
-            else
-            {
+            } else {
                 $this->sqlHelper->select( join(',', $this->attributes) );
             }
-        }
-        else
-        {
+        } else {
             $this->sqlHelper->select( $this->table . '.*' );
         }
     }
@@ -271,27 +265,21 @@ class QueryWriter
         $this->sqlHelper->from( $this->table );
     }
 
-    private function whererWithArrayValues( $conditions )
+    private function whererWithArrayValues($conditions)
     {
-        foreach ($conditions as $key => $value)
-        {
-            if(empty($key))
-            {
+        foreach ($conditions as $key => $value) {
+            if (empty($key)) {
                 throw new \InvalidArgumentException( 'Attribute is empty.' );
             }
-            if(is_array($value))
-            {
-                if(count($value) < 1)
-                {
+            if (is_array($value)) {
+                if (count($value) < 1) {
                     throw new \InvalidArgumentException( 'Values is empty.' );
                 }
                 $this->sqlHelper->addSQL(
                     ($this->deny) ? " AND $key NOT IN " : " AND $key IN ");
                 $this->sqlHelper->open()->addSQL(R::genSlots($value))->close();
                 $this->put($value);
-            }
-            else
-            {
+            } else {
                 $this->sqlHelper->addSQL(
                     ($this->deny) ? " AND $key <> ? " : " AND $key = ? ");
                 $this->put([$value]);
@@ -302,16 +290,12 @@ class QueryWriter
 
     private function conditionsQuery()
     {
-        if( $this->where )
-        {
+        if ($this->where) {
             $condition = array_shift($this->conditions);
-            if( is_array($condition) )
-            {
+            if ( is_array($condition) ) {
                 $this->sqlHelper->where( '1=1' );
                 $this->whererWithArrayValues( $condition );
-            }
-            else
-            {
+            } else {
                 $this->sqlHelper->where( $condition );
                 $this->put( $this->conditions );
             }
@@ -322,8 +306,7 @@ class QueryWriter
 
     private function ordenationQuery()
     {
-        if( $this->order )
-        {
+        if ($this->order) {
             $this->sqlHelper->addSQL( ' ORDER BY ' . join(',', $this->ordination) );
             $this->order = false;
         }
@@ -331,14 +314,10 @@ class QueryWriter
 
     private function limitationQuery()
     {
-        if( $this->limit )
-        {
-            if( $this->adapter->getDatabase()->getDatabaseType() == 'oracle' )
-            {
+        if ($this->limit) {
+            if ( $this->adapter->getDatabase()->getDatabaseType() == 'oracle' ) {
                 $this->where( " ROWNUM <= $this->limitValue " );
-            }
-            else
-            {
+            } else {
                 $this->sqlHelper->addSQL( " LIMIT $this->limitValue " );
             }
             $this->limit = false;
@@ -347,14 +326,10 @@ class QueryWriter
 
     private function offsetQuery()
     {
-        if( $this->offset )
-        {
-            if( $this->adapter->getDatabase()->getDatabaseType() == 'oracle' )
-            {
+        if ($this->offset) {
+            if ( $this->adapter->getDatabase()->getDatabaseType() == 'oracle' ) {
                 throw new \InvalidArgumentException( 'Offset not implemented for oracle' );
-            }
-            else
-            {
+            } else {
                 $this->sqlHelper->addSQL( " OFFSET $this->offsetValue " );
             }
             $this->offset = false;
@@ -363,8 +338,7 @@ class QueryWriter
 
     private function groupingQuery()
     {
-        if( $this->group )
-        {
+        if ($this->group) {
             $this->sqlHelper->addSQL( ' GROUP BY ' . join(',', $this->grouping) );
             $this->group = false;
         }
@@ -372,8 +346,7 @@ class QueryWriter
 
     private function havingQuery()
     {
-        if( $this->have )
-        {
+        if ($this->have) {
             $this->sqlHelper->addSQL( ' HAVING ' . array_shift($this->having) );
             $this->put( $this->having );
             $this->have = false;
@@ -382,29 +355,21 @@ class QueryWriter
 
     public function joiningQuery()
     {
-        if($this->join)
-        {
+        if ($this->join) {
             $lsql = [];
 
-            if ( !is_array( $this->joining[0] ) && preg_match( '/^\s*(INNER|LEFT|RIGTH|CROSS|FULL|JOIN)\s+/i', $this->joining[0] ) )
-            {
+            if ( !is_array( $this->joining[0] ) && preg_match( '/^\s*(INNER|LEFT|RIGTH|CROSS|FULL|JOIN)\s+/i', $this->joining[0] ) ) {
                 $lsql[] = trim( $this->joining[0] );
-            }
-            else
-            {
+            } else {
                 foreach ($this->joining as $value) {
-                    if(is_array($value))
-                    {
-                        while ( list($key, $val) = each($value) )
-                        {
+                    if (is_array($value)) {
+                        while ( list($key, $val) = each($value) ) {
                             $destTable   = trim( $key );
                             $targetTable = trim( $val );
                             $lsql[]      = "INNER JOIN {$destTable} ON {$destTable}.{$this->table}_id = {$this->table}.id";
                             $lsql[]      = "INNER JOIN {$targetTable} ON {$destTable}.{$targetTable}_id = {$targetTable}.id";
                         }
-                    }
-                    else
-                    {
+                    } else {
                         $destTable = trim( $value );
                         $lsql[]    = "INNER JOIN {$destTable} ON {$destTable}.{$this->table}_id = {$this->table}.id";
                     }

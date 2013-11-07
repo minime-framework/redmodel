@@ -3,131 +3,124 @@
 namespace Minime\RedModel;
 
 use Eloquent\Cosmos\ClassName;
-use Eloquent\Cosmos\ClassNameResolver;
-use R;
 
 class AssociationManager
 {
-	/**
-	 * The model wich model manager will take care of
-	 * @var Minime\RedModel\Model
-	 */
-	protected $model;
+    /**
+     * The model wich model manager will take care of
+     * @var Minime\RedModel\Model
+     */
+    protected $model;
 
-	public function __construct(Model $model)
-	{
-		$this->model = $model;
-	}
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
 
-	public function associateMany($models)
-	{
-		if(!is_array($models))
-		{
-			throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
-		}
+    public function associateMany($models)
+    {
+        if (!is_array($models)) {
+            throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
+        }
 
-		$relations = $this->getOwnManyAssociationsMetadata();
+        $relations = $this->getOwnManyAssociationsMetadata();
 
-		foreach($models as $model)
-		{
-			$related_class = '\\'.get_class($model);
-			$this->validateAssociationOrFail($relations, $related_class);
-			$own = 'own' . ClassName::fromString($related_class)->shortName();
-			$this->model->bean()->{$own}[] = $model->bean();
-		}
-		return $this->model;
-	}
+        foreach ($models as $model) {
+            $related_class = '\\'.get_class($model);
+            $this->validateAssociationOrFail($relations, $related_class);
+            $own = 'own' . ClassName::fromString($related_class)->shortName();
+            $this->model->bean()->{$own}[] = $model->bean();
+        }
 
-	public function unassociateMany($models)
-	{
-		if(!is_array($models))
-		{
-			throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
-		}
+        return $this->model;
+    }
 
-		$relations = $this->getOwnManyAssociationsMetadata();
+    public function unassociateMany($models)
+    {
+        if (!is_array($models)) {
+            throw new \InvalidArgumentException("Expected arrays of Minime\RedModel\Model");
+        }
 
-		foreach ($models as $model)
-		{
-			$related_class = '\\'.get_class($model);
-			$this->validateAssociationOrFail($relations, $related_class);
-			$own = 'own' . ClassName::fromString($related_class)->shortName();
-			unset($this->model->bean()->{$own}[$model->id()]);
-		}
-		return $this->model;
-	}
+        $relations = $this->getOwnManyAssociationsMetadata();
 
-	public function retrieveMany($related_class)
-	{		
-		$this->validateAssociationOrFail(
-			$this->getOwnManyAssociationsMetadata(),
-			$related_class
-		);
+        foreach ($models as $model) {
+            $related_class = '\\'.get_class($model);
+            $this->validateAssociationOrFail($relations, $related_class);
+            $own = 'own' . ClassName::fromString($related_class)->shortName();
+            unset($this->model->bean()->{$own}[$model->id()]);
+        }
 
-		$RelatedClass = $this->solveRelatedClass($related_class);
+        return $this->model;
+    }
 
-		$own = 'own' . $RelatedClass->shortName();
-		
-		$related = $RelatedClass->string();
-		$results = [];
-		foreach($this->model->bean()->$own as $related_bean)
-		{
-			$results[] = new $related(null, $related_bean);
-		}
-		return $results;
-	}
+    public function retrieveMany($related_class)
+    {
+        $this->validateAssociationOrFail(
+            $this->getOwnManyAssociationsMetadata(),
+            $related_class
+        );
 
-	public function relateOneToOne(Model $item)
-	{
+        $RelatedClass = $this->solveRelatedClass($related_class);
 
-	}
+        $own = 'own' . $RelatedClass->shortName();
 
-	public function retrieveOneToOne()
-	{
+        $related = $RelatedClass->string();
+        $results = [];
+        foreach ($this->model->bean()->$own as $related_bean) {
+            $results[] = new $related(null, $related_bean);
+        }
 
-	}
+        return $results;
+    }
 
-	protected function getOwnManyAssociationsMetadata()
-	{
-		return $this->model->getClassAnnotations()->grepNamespace('redmodel')->get('own-many');
-	}
+    public function relateOneToOne(Model $item)
+    {
 
-	/**
-	 * @todo Throw exception in case of undeclared association
-	 */
-	protected function validateAssociationOrFail($annotations, $related_class)
-	{
-		$RelatedClass = $this->solveRelatedClass($related_class);
-		
-		foreach($annotations as $declared_class)
-		{
-			$DeclaredClass = $this->solveRelatedClass($declared_class);
+    }
 
-			if($RelatedClass->isRuntimeEquivalentTo($DeclaredClass))
-			{
-				return true;
-			}
-		}
+    public function retrieveOneToOne()
+    {
 
-		throw new InvalidAssociationException();
-	}
+    }
 
-	private function solveRelatedClass($related_class_name)
-	{
-		$RelatedClass = ClassName::fromString($related_class_name);
+    protected function getOwnManyAssociationsMetadata()
+    {
+        return $this->model->getClassAnnotations()->grepNamespace('redmodel')->get('own-many');
+    }
 
-		if(!$RelatedClass->isAbsolute())
-		{
-			$RelatedClass = $this->solveRelatedShortNameClass($RelatedClass);
-		}
+    /**
+     * @todo Throw exception in case of undeclared association
+     */
+    protected function validateAssociationOrFail($annotations, $related_class)
+    {
+        $RelatedClass = $this->solveRelatedClass($related_class);
 
-		return $RelatedClass;
-	}
+        foreach ($annotations as $declared_class) {
+            $DeclaredClass = $this->solveRelatedClass($declared_class);
 
-	private function solveRelatedShortNameClass(ClassName $RelatedClass)
-	{
-		$ModelClassName = ClassName::fromString(get_class($this->model));
-		return $ModelClassName->parent()->toAbsolute()->join($RelatedClass);
-	}
+            if ($RelatedClass->isRuntimeEquivalentTo($DeclaredClass)) {
+                return true;
+            }
+        }
+
+        throw new InvalidAssociationException();
+    }
+
+    private function solveRelatedClass($related_class_name)
+    {
+        $RelatedClass = ClassName::fromString($related_class_name);
+
+        if (!$RelatedClass->isAbsolute()) {
+            $RelatedClass = $this->solveRelatedShortNameClass($RelatedClass);
+        }
+
+        return $RelatedClass;
+    }
+
+    private function solveRelatedShortNameClass(ClassName $RelatedClass)
+    {
+        $ModelClassName = ClassName::fromString(get_class($this->model));
+
+        return $ModelClassName->parent()->toAbsolute()->join($RelatedClass);
+    }
 }
-

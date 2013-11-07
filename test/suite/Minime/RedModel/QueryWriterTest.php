@@ -26,7 +26,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function findBySQLAndGetSQL()
     {
-        foreach(R::dispense( 'person', 3 ) as $bean){
+        foreach (R::dispense( 'person', 3 ) as $bean) {
             R::store($bean);
         };
 
@@ -40,7 +40,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function execute()
     {
-        foreach(R::dispense( 'person', 3 ) as $bean){
+        foreach (R::dispense( 'person', 3 ) as $bean) {
             R::store($bean);
         };
 
@@ -52,7 +52,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function connection()
     {
-        foreach(R::dispense( 'person', 3 ) as $bean){
+        foreach (R::dispense( 'person', 3 ) as $bean) {
             R::store($bean);
         };
 
@@ -65,7 +65,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function selectAllWithDistinct()
     {
-        foreach(R::dispense( 'person' , 3 ) as $bean){
+        foreach (R::dispense( 'person' , 3 ) as $bean) {
             $bean->first_name = 'vinicius';
             $bean->last_name  = 'carvalho';
             R::store($bean);
@@ -102,7 +102,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function where()
     {
-        foreach(R::dispense( 'person', 3 ) as $bean){
+        foreach (R::dispense( 'person', 3 ) as $bean) {
             $bean->first_name = 'vinicius';
             $bean->last_name  = 'carvalho';
             R::store($bean);
@@ -144,7 +144,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function finders()
     {
-        foreach(R::dispense( 'person', 10 ) as $bean){
+        foreach (R::dispense( 'person', 10 ) as $bean) {
             $bean->first_name = 'vinicius';
             $bean->last_name  = 'carvalho';
             R::store($bean);
@@ -165,7 +165,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function notConditions()
     {
-        foreach(R::dispense( 'person', 3) as $bean){
+        foreach (R::dispense( 'person', 3) as $bean) {
             $bean->first_name = 'vinicius';
             R::store($bean);
         };
@@ -217,7 +217,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
     public function calculations()
     {
         $i = 18;
-        foreach(R::dispense( 'person', 3 ) as $bean){
+        foreach (R::dispense( 'person', 3 ) as $bean) {
             $bean->first_name = 'vinicius';
             $bean->age = $i++;
             R::store($bean);
@@ -237,7 +237,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function LimitAndOffset()
     {
-        foreach(R::dispense( 'person', 3 ) as $bean){
+        foreach (R::dispense( 'person', 3 ) as $bean) {
             R::store($bean);
         };
         $this->writer->limit(2);
@@ -252,7 +252,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function ordination()
     {
-        foreach(R::dispense( 'person', 3 ) as $bean){
+        foreach (R::dispense( 'person', 3 ) as $bean) {
             $bean->first_name = 'vinicius';
             $bean->last_name  = 'carvalho';
             R::store($bean);
@@ -291,7 +291,7 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function groupingAndCondition()
     {
-        foreach(R::dispense( 'person', 5 ) as $bean){
+        foreach (R::dispense( 'person', 5 ) as $bean) {
             $bean->created_at = '2013-02-19';
             $bean->price  = 10;
             R::store($bean);
@@ -316,11 +316,9 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->writer->all());
         $this->assertEquals( 'select user.* from user left outer join address on address.user_id = user.id', $this->writer->getSQL() );
 
-
         $this->writer = (new QueryWriter( ' user ' ))->joins( ' address ' );
         $this->assertCount(1, $this->writer->all());
         $this->assertEquals( 'select user.* from user inner join address on address.user_id = user.id', $this->writer->getSQL());
-
 
         $contact         = R::dispense('contact');
         $contact->user   = $user;
@@ -329,7 +327,6 @@ class QueryWriterTest extends \PHPUnit_Framework_TestCase
         $this->writer = (new QueryWriter( ' user ' ))->joins( ' address ', ' contact ' );
         $this->assertCount(1, $this->writer->all());
         $this->assertEquals( 'select user.* from user inner join address on address.user_id = user.id inner join contact on contact.user_id = user.id', $this->writer->getSQL() );
-
 
         $employee     = R::dispense('employee');
         $employee->user = $user;

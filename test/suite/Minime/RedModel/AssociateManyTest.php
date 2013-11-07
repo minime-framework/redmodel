@@ -3,7 +3,6 @@
 namespace Minime\RedModel;
 
 use \Minime\RedModel\Fixtures\Associations\Book;
-use \Minime\RedModel\Fixtures\Associations\Author;
 use \Minime\RedModel\Fixtures\Associations\Page;
 use \Minime\RedModel\Fixtures\Associations\UnrelatedModel;
 use \R;

@@ -10,11 +10,11 @@ namespace Minime\RedModel\Fixtures;
 class GenericModel extends \Minime\RedModel\Model
 {
 
-	/**
-	 * @redmodel.column @unique @null
-	 * @type
-	 * @default <value>	 
-	 */
-		protected $name;
+    /**
+     * @redmodel.column @unique @null
+     * @type
+     * @default <value>
+     */
+        protected $name;
 
 }

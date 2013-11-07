@@ -9,7 +9,7 @@ class Behaviors
 
     /**
      * Model
-     * 
+     *
      * @var Minime\RedModel\Model
      */
     protected $Model;
@@ -26,17 +26,14 @@ class Behaviors
      */
     public function updateTimestamps()
     {
-        
+
         $annotations = Meta::getClassAnnotations($this->Model)->useNamespace('redmodel');
-        if($annotations->has('timestamps'))
-        {
+        if ($annotations->has('timestamps')) {
             $time = $this->getFreshTimestamp();
 
-            if($this->Model->bean()->getMeta('tainted'))
-            {
-                if(!$this->Model->bean()->id)
-                {
-                    $this->Model->bean()->created_at = $time;        
+            if ($this->Model->bean()->getMeta('tainted')) {
+                if (!$this->Model->bean()->id) {
+                    $this->Model->bean()->created_at = $time;
                 }
                 $this->Model->bean()->updated_at = $time;
             }
@@ -55,17 +52,15 @@ class Behaviors
     {
         $validator = new ValidationManager;
         $errors = [];
-        foreach($this->Model->getColumns() as $column)
-        {
+        foreach ($this->Model->getColumns() as $column) {
             $rules = Meta::getPropertyAnnotations($this->Model, $column)->getAsArray('redmodel.validate');
             $validator->setRules($rules);
-            if(FALSE === $validator->isValid($this->Model->$column()))
-            {
+            if (FALSE === $validator->isValid($this->Model->$column())) {
                 $errors[$column] = $validator->getErrors();
             }
         }
 
-       return $errors; 
+       return $errors;
     }
 
     public function validate()

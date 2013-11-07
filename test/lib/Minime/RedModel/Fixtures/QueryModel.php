@@ -5,7 +5,8 @@ namespace Minime\RedModel\Fixtures;
 /**
  * @redmodel
  */
-class QueryModel extends \Minime\RedModel\Model {
+class QueryModel extends \Minime\RedModel\Model
+{
     /**
      * @column
      */
