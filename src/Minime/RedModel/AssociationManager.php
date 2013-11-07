@@ -19,7 +19,7 @@ class AssociationManager
 		$this->model = $model;
 	}
 
-	public function relateOneToMany($models)
+	public function associateMany($models)
 	{
 		if(!is_array($models))
 		{
@@ -35,9 +35,10 @@ class AssociationManager
 			$own = 'own' . ClassName::fromString($related_class)->shortName();
 			$this->model->unboxBean()->{$own}[] = $model->unboxBean();
 		}
+		return $this->model;
 	}
 
-	public function unrelateOneToMany($models)
+	public function unassociateMany($models)
 	{
 		if(!is_array($models))
 		{
@@ -53,14 +54,10 @@ class AssociationManager
 			$own = 'own' . ClassName::fromString($related_class)->shortName();
 			unset($this->model->unboxBean()->{$own}[$model->id()]);
 		}
+		return $this->model;
 	}
 
-	protected function getOwnManyAssociationsMetadata()
-	{
-		return $this->model->getClassAnnotations()->grepNamespace('redmodel')->get('own-many');
-	}
-
-	public function getOneToMany($related_class)
+	public function retrieveMany($related_class)
 	{		
 		$this->validateAssociationOrFail(
 			$this->getOwnManyAssociationsMetadata(),
@@ -88,6 +85,11 @@ class AssociationManager
 	public function retrieveOneToOne()
 	{
 
+	}
+
+	protected function getOwnManyAssociationsMetadata()
+	{
+		return $this->model->getClassAnnotations()->grepNamespace('redmodel')->get('own-many');
 	}
 
 	/**

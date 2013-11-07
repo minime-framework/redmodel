@@ -372,40 +372,12 @@ abstract class Model
     }
 
     /**
-     * @todo  Associate many description
+     * Returns association manager for the current model
      * 
-     * @param  array $models
-     * @return self
+     * @return Minime\RedModel\AssociationManager
      */
-	public function associateMany($models)
+	public function associations()
 	{
-		$manager = new AssociationManager($this);
-		$manager->relateOneToMany($models);
-		return $this;
-	}
-
-	/**
-	 * @todo  Unassociate many description
-	 * 
-	 * @param  array $models
-	 * @return self
-	 */
-	public function unassociateMany($models)
-	{
-		$manager = new AssociationManager($this);
-		$manager->unrelateOneToMany($models);
-		return $this;
-	}
-
-	/**
-	 * @todo  Retrieve many description
-	 * 
-	 * @param  [type] $model [description]
-	 * @return array
-	 */
-	public function retrieveMany($model)
-	{
-		$manager = new AssociationManager($this);
-		return $manager->getOneToMany($model);
+		return $manager = new AssociationManager($this);
 	}
 }
