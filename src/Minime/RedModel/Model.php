@@ -19,7 +19,7 @@ abstract class Model
 	private $bean;
 
 	/**
-	 * ErrosBad
+	 * ErrosBag
 	 * 
 	 * @var \Minime\RedModel\ErrorsBag
 	 */
@@ -220,7 +220,7 @@ abstract class Model
 		return true;
 	}
 
-	public function reportErrors()
+	public function getErrors()
 	{
 		return $this->errors;		
 	} 
@@ -262,16 +262,6 @@ abstract class Model
 			return false;
 		}
 		return false;
-	}
-
-	/**
-	 * Start query writer for query.
-	 * 
-	 * @return QueryWriter
-	 */
-	public static function writer()
-	{
-		return new Writer(self::entity());
 	}
 
 	/**
@@ -372,12 +362,22 @@ abstract class Model
     }
 
     /**
-     * Returns association manager for the current model
+     * Returns association manager for current model
      * 
      * @return Minime\RedModel\AssociationManager
      */
 	public function associations()
 	{
 		return $manager = new AssociationManager($this);
+	}
+
+	/**
+	 * Starts query writer for current model
+	 * 
+	 * @return Minime\RedModel\QueryWriter
+	 */
+	public static function Writer()
+	{
+		return new Writer(self::entity());
 	}
 }
