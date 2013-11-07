@@ -46,9 +46,31 @@ class Behaviors
     /**
      * @todo Add database agnostic logic to check unique constrainsts of values
      */
-    public function checkUniqueConstraints()
+    public function validateUniqueConstraints()
     {
-        return true;
+        return [];
+    }
+
+    public function validateFields()
+    {
+        $validator = new ValidationManager;
+        $errors = [];
+        foreach($this->Model->getColumns() as $column)
+        {
+            $rules = Meta::getPropertyAnnotations($this->Model, $column)->getAsArray('redmodel.validate');
+            $validator->setRules($rules);
+            if(FALSE === $validator->isValid($this->Model->$column()))
+            {
+                $errors[$column] = $validator->getErrors();
+            }
+        }
+
+       return $errors; 
+    }
+
+    public function validate()
+    {
+        return new ErrorsBag($this->validateUniqueConstraints() + $this->validateFields());
     }
 
     /**

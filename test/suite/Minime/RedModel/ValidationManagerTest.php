@@ -20,7 +20,7 @@ class ValidationManagerTest extends \PHPUnit_Framework_TestCase
 		$rules = ['int'=> ['not string']];
 		$this->ValidationManager->setRules($rules);
 		$this->assertFalse($this->ValidationManager->isValid('string'));		
-		$this->assertCount(1, $this->ValidationManager->reportErrors());
+		$this->assertCount(1, $this->ValidationManager->getErrors());
 	}
 
 	/**
@@ -73,11 +73,11 @@ class ValidationManagerTest extends \PHPUnit_Framework_TestCase
 	 * @test
 	 * @dataProvider provedorValidateFalse	
 	 */
-	public function reportErrors($value, $rules)
+	public function getErrors($value, $rules)
 	{
 		$this->ValidationManager->setRules($rules);
 		$this->ValidationManager->isValid($value);
-		$errors = $this->ValidationManager->reportErrors();	
+		$errors = $this->ValidationManager->getErrors();	
 		# count
 		$this->assertCount(1, $errors);
 		$this->assertInternalType('array', $errors);		

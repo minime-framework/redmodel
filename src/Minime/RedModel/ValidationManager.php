@@ -98,7 +98,7 @@ class ValidationManager
 	 * Get errors
 	 * @return array
 	 */
-	public function reportErrors()
+	public function getErrors()
 	{
 		return $this->errors;
 	}
