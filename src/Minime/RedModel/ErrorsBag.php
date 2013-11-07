@@ -2,10 +2,10 @@
 
 namespace Minime\RedModel;
 
-class ErrorsBag implements \IteratorAggregate
+class ErrorsBag implements \IteratorAggregate, \Countable
 {
 	/**
-	 * keeper errors
+	 * Errors
 	 * @var array
 	 */
 	private $errors = [];
@@ -81,6 +81,15 @@ class ErrorsBag implements \IteratorAggregate
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->errors);
+	}
+
+	/**
+	 * Countable
+	 * @return integer
+	 */
+	public function count()
+	{
+		return count($this->errors);
 	}
 
 }
