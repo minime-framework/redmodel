@@ -11,7 +11,7 @@ class GenericModel extends \Minime\RedModel\Model
 {
 
     /**
-     * @redmodel.column    
+     * @redmodel.column
      */
         protected $name;
 

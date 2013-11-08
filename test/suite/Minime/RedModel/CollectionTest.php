@@ -27,7 +27,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
    * @expectedException \PHPUnit_Framework_Error
    */
   public function collectionInvalidArgument()
-  { 
+  {
     $models = [new \stdClass()];
     new Collection($models);
   }
