@@ -11,9 +11,7 @@ class GenericModel extends \Minime\RedModel\Model
 {
 
     /**
-     * @redmodel.column @unique @null
-     * @type
-     * @default <value>
+     * @redmodel.column    
      */
         protected $name;
 
