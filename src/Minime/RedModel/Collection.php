@@ -18,7 +18,7 @@ class Collection implements  \IteratorAggregate, \Countable, \JsonSerializable
    */
   public function each(callable $callback)
   {
-    array_map([$callback, '__invoke'], $this->models);
+    array_map($callback, $this->models);
 
     return $this;
   }
@@ -30,15 +30,9 @@ class Collection implements  \IteratorAggregate, \Countable, \JsonSerializable
    */
   public function filter(callable $callback)
   {
-    $collection = new self([]);    
-    foreach ($this as $model) {
-      $response = $callback->__invoke($model);
-      if ($response) {
-        $collection->push($response);
-      }
-    }
+    $itens = array_filter(array_map($callback, $this->models));
 
-    return $collection;
+    return new self($itens);
   }
 
   /**
@@ -102,7 +96,7 @@ class Collection implements  \IteratorAggregate, \Countable, \JsonSerializable
    * @param  array  Minime\RedModel\Model
    */
   private function validateInstancesOrFail(array $models)
-  {
+  {    
     array_map(function (Model $model) {}, $models);
   }
 }
