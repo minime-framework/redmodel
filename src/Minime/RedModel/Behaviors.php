@@ -50,10 +50,10 @@ class Behaviors
 
     public function validateFields()
     {
-        $validator = new ValidationManager;
+        $validator = new Validation;
         $errors = [];
         foreach ($this->Model->getColumns() as $column) {
-            $rules = Meta::getPropertyAnnotations($this->Model, $column)->getAsArray('redmodel.validate');
+            $rules = Meta::getPropertyAnnotations($this->Model, $column)->useNamespace('redmodel.validate')->export();
             $validator->setRules($rules);
             if (FALSE === $validator->isValid($this->Model->$column())) {
                 $errors[$column] = $validator->getErrors();

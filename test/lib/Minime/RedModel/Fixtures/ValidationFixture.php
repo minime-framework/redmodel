@@ -6,21 +6,21 @@ namespace Minime\RedModel\Fixtures;
  */
 class ValidationFixture extends \Minime\RedModel\Model
 {
-    /**
-     * @redmodel.column
-     * @redmodel.validate.string json ["<< not is string"]
-     */
-    protected $name;
+  /**
+   * @redmodel.column
+   * @redmodel.validate.cpf {cpf not available}
+   */
+  protected $cpf;
 
-    /**
-     * @redmodel.column
-     * @redmodel.validate.numeric
-     */
-    protected $numeric;
+  /**
+   * @redmodel.column
+   * @redmodel.validate.noWhitespace.length 1, 15
+   */
+  protected $between;
 
-    /**
-     * @redmodel.column
-     */
-    protected $data;
+  /**
+   * @redmodel.column
+   */
+  protected $empty;
 
 }

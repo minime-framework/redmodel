@@ -92,6 +92,25 @@ class ErrorsBagTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function isTraversable()
+    {
+      foreach ($this->Bag as $key => $value) {
+        $this->assertEquals($value, $this->Bag->get($key));
+      }
+    }
+
+    /**
+     * @test
+     */
+    public function isCountable()
+    {
+        $this->assertCount(14, $this->Bag->export());
+        $this->assertCount(14, $this->Bag);
+    }
+
+    /**
+     * @test
+     */
     public function export()
     {
         $this->assertInternalType('array', $this->Bag->export());
