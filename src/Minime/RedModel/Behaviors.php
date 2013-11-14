@@ -50,7 +50,7 @@ class Behaviors
 
     public function validateFields()
     {
-        $validator = new ValidationManager;
+        $validator = new Validation;
         $errors = [];
         foreach ($this->Model->getColumns() as $column) {
             $rules = Meta::getPropertyAnnotations($this->Model, $column)->useNamespace('redmodel.validate')->export();
